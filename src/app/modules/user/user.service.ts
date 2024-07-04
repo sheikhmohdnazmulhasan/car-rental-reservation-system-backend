@@ -13,7 +13,7 @@ async function createUserIntoDb(payload: TUser, next: NextFunction) {
         }
 
     } catch (error) {
-
+        next(error);
     };
 };
 
