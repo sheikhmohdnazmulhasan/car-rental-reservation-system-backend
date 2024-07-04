@@ -13,6 +13,8 @@ app.get('/', (req: Request, res: Response) => {
     res.send('Hello World!');
 });
 
+// application route;
+// app.use('/api/v1', Routes);
 
 // global error handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
@@ -26,7 +28,6 @@ app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     });
 
 });
-
 
 // not found route
 app.all('*', (req: Request, res: Response) => {
