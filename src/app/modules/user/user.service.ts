@@ -1,10 +1,10 @@
 import { NextFunction } from "express";
-import { TUser } from "./user.interface";
+import { TLogin, TUser } from "./user.interface";
 import User from "./user.model";
 import httpStatus from "http-status";
 
 async function createUserIntoDb(payload: TUser, next: NextFunction) {
-    
+
     try {
         const user = await User.create(payload);
 
@@ -15,6 +15,20 @@ async function createUserIntoDb(payload: TUser, next: NextFunction) {
     } catch (error) {
         next(error);
     };
-};
 
-export const UserServices = { createUserIntoDb };
+}; //end;
+
+async function loginUser(payload: TLogin, next: NextFunction) {
+
+    try {
+        const user = await User.findOne({ email: payload?.email });
+
+        console.log(user);
+
+    } catch (error) {
+        next(error);
+    };
+
+}; //end
+
+export const UserServices = { createUserIntoDb, loginUser };

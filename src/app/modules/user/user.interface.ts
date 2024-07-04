@@ -6,3 +6,8 @@ export interface TUser {
     phone: string;
     address: string;
 };
+
+export interface TLogin {
+    email: string;
+    password: string;
+};
