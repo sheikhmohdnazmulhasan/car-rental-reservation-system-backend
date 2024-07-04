@@ -11,4 +11,11 @@ const createUserValidationSchema = z.object({
     })
 });
 
-export const UserValidation = { createUserValidationSchema };
+const loginUserValidationSchema = z.object({
+    body: z.object({
+        email: z.string().email({ message: 'Invalid Email' }),
+        password: z.string()
+    })
+})
+
+export const UserValidation = { createUserValidationSchema, loginUserValidationSchema };

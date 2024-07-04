@@ -12,7 +12,9 @@ async function createUserIntoDb(payload: TUser, next: NextFunction) {
         const user = await User.create(payload);
 
         if (user) {
-            return { success: true, statusCode: httpStatus.CREATED, message: 'User registered successfully', data: user }
+            const userForClient = await User.findById(user._id);
+
+            return { success: true, statusCode: httpStatus.CREATED, message: 'User registered successfully', data: userForClient }
         }
 
     } catch (error) {
@@ -44,7 +46,12 @@ async function loginUser(payload: TLogin, next: NextFunction) {
         if (accessToken) {
             const refreshToken = jwt.sign(tokenPayload, (config.jwt_refresh_token as string), { expiresIn: '365d' });
 
-            return { success: true, statusCode: httpStatus.OK, message: 'User logged in successfully', data: user, accessToken: accessToken, refreshToken: refreshToken }
+            if (refreshToken) {
+                const userForClient = await User.findOne({ email: payload?.email });
+
+                return { success: true, statusCode: httpStatus.OK, message: 'User logged in successfully', data: userForClient, accessToken: accessToken, refreshToken: refreshToken }
+            }
+
         };
 
     } catch (error) {
