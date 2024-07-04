@@ -37,11 +37,15 @@ async function loginUser(payload: TLogin, next: NextFunction) {
             return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Wrong Password', data: null, token: null };
         };
 
-        const dataForToken = { user: user.email, role: user.role };
+        const tokenPayload = { user: user.email, role: user.role };
 
-        const accessToken = jwt.sign(dataForToken, (config.jwt_access_token as string), { expiresIn: '3d' });
+        const accessToken = jwt.sign(tokenPayload, (config.jwt_access_token as string), { expiresIn: '3d' });
 
-        return { success: true, statusCode: httpStatus.OK, message: 'User logged in successfully', data: user, token: accessToken }
+        if (accessToken) {
+            const refreshToken = jwt.sign(tokenPayload, (config.jwt_refresh_token as string), { expiresIn: '365d' });
+
+            return { success: true, statusCode: httpStatus.OK, message: 'User logged in successfully', data: user, accessToken: accessToken, refreshToken: refreshToken }
+        };
 
     } catch (error) {
         next(error);
