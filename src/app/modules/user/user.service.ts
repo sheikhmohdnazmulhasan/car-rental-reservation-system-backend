@@ -23,7 +23,12 @@ async function loginUser(payload: TLogin, next: NextFunction) {
     try {
         const user = await User.findOne({ email: payload?.email });
 
-        console.log(user);
+        if (!user) {
+            return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'The email you provided did not match any accounts', data: null, token: null }
+        }
+
+
+        return { success: true, statusCode: httpStatus.OK, message: 'User logged in successfully', data: user, token: 'xxxx' }
 
     } catch (error) {
         next(error);

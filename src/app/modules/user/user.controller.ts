@@ -21,6 +21,26 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
 
 }; //end
 
-export const UserControllers = { createUser };
+async function loginUser(req: Request, res: Response, next: NextFunction) {
 
+    try {
+        const result = await UserServices.loginUser(req.body, next);
+
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+                token: result.token
+            });
+        };
+
+    } catch (error) {
+        next()
+    };
+
+};
+
+export const UserControllers = { createUser, loginUser };
 

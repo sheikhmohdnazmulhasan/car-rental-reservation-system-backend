@@ -1,0 +1,21 @@
+[33mfd484d8[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{0}: reset: moving to HEAD~1
+[33m9753ff4[m HEAD@{1}: commit: The initial service function is performed to login the user
+[33mfd484d8[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m HEAD@{2}: commit: The initial service function is performed to login the user
+[33m9cdaca6[m HEAD@{3}: commit: added some logic
+[33m8a7ab1a[m HEAD@{4}: commit: password bug fixed
+[33m2a25f4c[m HEAD@{5}: commit: CheckUniqueEmail middlewares created
+[33m1e58dda[m HEAD@{6}: commit: all logic ok for creating user
+[33mf263179[m HEAD@{7}: commit: createUser fn created into user controllers for send response to client
+[33mbeb7f6d[m HEAD@{8}: commit: createUserIntoDb fn created into user services for creating new user
+[33m7663623[m HEAD@{9}: commit: zod validation middlewares created
+[33m4bdf7ba[m HEAD@{10}: commit: zod model modified
+[33m2ac3aa6[m HEAD@{11}: commit: zod validation object created for creating user
+[33mc13ca87[m HEAD@{12}: commit: encrypting password
+[33m27374a6[m HEAD@{13}: commit: bcrypt installed
+[33m5752c1c[m HEAD@{14}: commit: user model created
+[33mdaa7a46[m HEAD@{15}: commit: user interface created
+[33mfc9b486[m HEAD@{16}: commit: global error handler created
+[33m5266357[m HEAD@{17}: commit: not found route created and http-status npm package installed
+[33mf1aa662[m HEAD@{18}: commit: cors and express.json parser added on the app.ts
+[33m22cd07b[m HEAD@{19}: Branch: renamed refs/heads/master to refs/heads/main
+[33m22cd07b[m HEAD@{21}: commit (initial): first commit
