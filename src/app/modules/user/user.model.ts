@@ -12,11 +12,18 @@ const userSchema = new Schema<TUser>({
 
 });
 
+
 // encrypting password
 userSchema.pre('save', async function (next) {
     this.password = await bcrypt.hash(this.password, Number(config.bcrypt_salt_rounds));
     next();
 });
+
+userSchema.methods.toJSON = function () {
+    const obj = this.toObject();
+    delete obj.password;
+    return obj;
+};
 
 const User = mongoose.model<TUser>('user', userSchema);
 export default User;

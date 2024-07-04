@@ -4,7 +4,7 @@ import User from "./user.model";
 import httpStatus from "http-status";
 
 async function createUserIntoDb(payload: TUser, next: NextFunction) {
-
+    
     try {
         const user = await User.create(payload);
 

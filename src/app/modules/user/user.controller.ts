@@ -4,11 +4,12 @@ import { UserServices } from "./user.service";
 async function createUser(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const result = await UserServices.createUserIntoDb(req.body, next);
+        const result = await UserServices.createUserIntoDb(req.body, next)
 
         if (result) {
             res.status(result.statusCode).json({
                 success: result.success,
+                statusCode: result.statusCode,
                 message: result.message,
                 data: result.data,
             });
@@ -21,3 +22,5 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
 }; //end
 
 export const UserControllers = { createUser };
+
+
