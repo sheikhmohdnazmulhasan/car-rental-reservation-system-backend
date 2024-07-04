@@ -7,10 +7,11 @@ const userSchema = new Schema<TUser>({
     name: { type: String, required: true },
     email: { type: String, required: true },
     role: { type: String, enum: ['admin', 'user'], required: true },
+    phone: { type: String, required: true },
     address: { type: String, required: true },
     password: { type: String, required: true },
 
-});
+}, { timestamps: true });
 
 
 // encrypting password
@@ -22,6 +23,7 @@ userSchema.pre('save', async function (next) {
 userSchema.methods.toJSON = function () {
     const obj = this.toObject();
     delete obj.password;
+    delete obj.__v;
     return obj;
 };
 
