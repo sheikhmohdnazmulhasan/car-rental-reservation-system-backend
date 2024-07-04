@@ -1,6 +1,7 @@
 import express, { Application, NextFunction, Request, Response } from 'express';
 import cors from 'cors';
 import status from 'http-status';
+import { UserRoute } from './app/modules/user/user.route';
 
 const app: Application = express();
 
@@ -14,7 +15,7 @@ app.get('/', (req: Request, res: Response) => {
 });
 
 // application route;
-// app.use('/api/v1', Routes);
+app.use('/api/auth', UserRoute);
 
 // global error handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
