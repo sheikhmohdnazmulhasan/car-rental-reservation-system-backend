@@ -9,7 +9,7 @@ const userSchema = new Schema<TUser>({
     role: { type: String, enum: ['admin', 'user'], required: true },
     phone: { type: String, required: true },
     address: { type: String, required: true },
-    password: { type: String, required: true },
+    password: { type: String, required: true, select: false },
 
 }, { timestamps: true });
 
@@ -20,12 +20,12 @@ userSchema.pre('save', async function (next) {
     next();
 });
 
-userSchema.methods.toJSON = function () {
-    const obj = this.toObject();
-    delete obj.password;
-    delete obj.__v;
-    return obj;
-};
+// userSchema.methods.toJSON = function () {
+//     const obj = this.toObject();
+//     delete obj.password;
+//     delete obj.__v;
+//     return obj;
+// };
 
 const User = mongoose.model<TUser>('user', userSchema);
 export default User;
