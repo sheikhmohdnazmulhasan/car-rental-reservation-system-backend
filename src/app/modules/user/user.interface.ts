@@ -4,4 +4,4 @@ export interface TUser {
     role: 'user' | 'admin';
     password: string;
     address: string;
-}
+};
