@@ -45,5 +45,5 @@ carSchema.methods.toJSON = function () {
     return obj;
 };
 
-const Car = mongoose.model<TCar>('car', carSchema);
+const Car = mongoose.model<TCar>('Car', carSchema);
 export default Car;

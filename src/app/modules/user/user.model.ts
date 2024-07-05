@@ -27,5 +27,5 @@ userSchema.methods.toJSON = function () {
     return obj;
 };
 
-const User = mongoose.model<TUser>('user', userSchema);
+const User = mongoose.model<TUser>('User', userSchema);
 export default User;

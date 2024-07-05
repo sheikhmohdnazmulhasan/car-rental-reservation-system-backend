@@ -12,8 +12,13 @@ async function createBookingIntoDb(user: JwtPayload, payload: any, next: NextFun
 
         const isCarIdCorrect = await Car.findById(payload.carId);
         if (!isCarIdCorrect) {
-            return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Invalid Car ID', data: [] }
+            return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Invalid Car ID', data: [] };
         }
+
+        // if (isCarIdCorrect.status === 'unavailable') {
+        //     return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Car is not available right now', data: [] };
+
+        // };
 
         const userObj = await User.findOne({ email: user.user });
         if (!userObj) {
@@ -27,14 +32,11 @@ async function createBookingIntoDb(user: JwtPayload, payload: any, next: NextFun
 
         const dataForServer = { car: isCarIdCorrect._id, date: payload.date, startTime: payload.startTime, user: userObj?._id };
 
-        const booking = (await Booking.create(dataForServer)).populate('car');
+        const booking = await (await Booking.create(dataForServer)).populate('car user');
 
         if (!booking) {
             return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Booking Unsuccessful', data: [] };
         };
-
-        // const bookingForClient = await Booking.findById(booking)
-
 
         return { success: true, statusCode: httpStatus.OK, message: 'Car booked successfully', data: booking }
 
