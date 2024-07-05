@@ -37,8 +37,9 @@ async function getAllCars(req: Request, res: Response, next: NextFunction) {
         };
 
     } catch (error) {
+        next(error);
 
-    }
+    };
 }
 
-export const CarControllers = { createCar } 
+export const CarControllers = { createCar, getAllCars } 
