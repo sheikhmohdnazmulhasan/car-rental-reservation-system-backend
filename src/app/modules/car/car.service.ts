@@ -16,6 +16,22 @@ async function createCarIntoDb(payload: TCar, next: NextFunction) {
         next(error);
     };
 
+}; //end;
+
+async function getAllCarsFromDb(next: NextFunction) {
+
+    try {
+        const allData = await Car.find();
+
+        if (allData) {
+
+            return { success: true, statusCode: 200, message: 'Cars retrieved successfully', data: allData }
+        }
+
+    } catch (error) {
+        next(error)
+    };
+
 }; //end
 
-export const CarServices = { createCarIntoDb };
+export const CarServices = { createCarIntoDb, getAllCarsFromDb };
