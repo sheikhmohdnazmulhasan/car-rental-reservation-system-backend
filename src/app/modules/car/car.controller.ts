@@ -21,4 +21,24 @@ async function createCar(req: Request, res: Response, next: NextFunction) {
 
 }; //end
 
+
+async function getAllCars(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const result = await CarServices.getAllCarsFromDb(next);
+
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+        };
+
+    } catch (error) {
+
+    }
+}
+
 export const CarControllers = { createCar } 
