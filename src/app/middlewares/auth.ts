@@ -37,6 +37,8 @@ function Auth(role: string) {
                     });
 
                 } else {
+                    req.user = (decoded as JwtPayload);
+                    
                     next();
                 }
             };
