@@ -11,6 +11,13 @@ const bookingSchema = new mongoose.Schema<TBooking>({
 }, { timestamps: true });
 
 
+bookingSchema.methods.toJSON = function () {
+    const obj = this.toObject();
+    // delete obj.password;
+    delete obj.__v;
+    return obj
+};
+
 const Booking = mongoose.model<TBooking>('Booking', bookingSchema);
 export default Booking;
 
