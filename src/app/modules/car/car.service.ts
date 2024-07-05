@@ -21,13 +21,13 @@ async function createCarIntoDb(payload: TCar, next: NextFunction) {
 async function getAllCarsFromDb(next: NextFunction) {
 
     try {
-        const allData = await Car.find();
+        const allData = await Car.find({ isDeleted: false });
 
         if (allData.length) {
             return { success: true, statusCode: 200, message: 'Cars retrieved successfully', data: allData }
 
         } else {
-            return { success: false, statusCode: 404, message: 'No Data Found', data: allData }
+            return { success: false, statusCode: 404, message: 'No Data Found', data: [] }
 
         };
 
@@ -40,12 +40,15 @@ async function getAllCarsFromDb(next: NextFunction) {
 async function getSpecificCarFromDb(query: string, next: NextFunction) {
 
     try {
-        const car = await Car.findById({ query });
+        const car = await Car.findOne({ _id: query, isDeleted: false });
 
         if (car) {
             return { success: true, statusCode: 200, message: 'A Car retrieved successfully', data: car }
 
-        };
+        } else {
+            return { success: false, statusCode: 404, message: 'No Data Found', data: [] }
+
+        }
 
     } catch (error) {
         next(error);
