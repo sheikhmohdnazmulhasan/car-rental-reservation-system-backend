@@ -26,7 +26,24 @@ const carSchema = new mongoose.Schema<TCar>({
         type: Number,
         required: true,
     },
-});
+    status: {
+        type: String,
+        enum: ['available', 'unavailable'],
+        default: 'available'
+    },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    }
+}, { timestamps: true });
+
+
+
+carSchema.methods.toJSON = function () {
+    const obj = this.toObject();
+    delete obj.__v;
+    return obj;
+};
 
 const Car = mongoose.model<TCar>('car', carSchema);
 export default Car;
