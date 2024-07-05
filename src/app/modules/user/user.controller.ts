@@ -27,7 +27,6 @@ async function loginUser(req: Request, res: Response, next: NextFunction) {
         const result = await UserServices.loginUser(req.body, next);
 
         if (result) {
-
             res.cookie('refreshToken', result?.refreshToken, {
                 secure: false,
                 httpOnly: true
