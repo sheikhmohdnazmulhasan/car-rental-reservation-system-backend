@@ -72,6 +72,19 @@ async function updateSpecificCarIntoDb(query: string, payload: TCar, next: NextF
         next(error);
     };
 
+}; //end;
+
+async function deleteACarFromDb(query: string) {
+
+    try {
+        const result = await Car.findByIdAndUpdate(query, { isDeleted: true });
+
+        console.log(result);
+
+    } catch (error) {
+
+    };
+
 }; //end
 
-export const CarServices = { createCarIntoDb, getAllCarsFromDb, getSpecificCarFromDb, updateSpecificCarIntoDb };
+export const CarServices = { createCarIntoDb, getAllCarsFromDb, getSpecificCarFromDb, updateSpecificCarIntoDb, deleteACarFromDb };
