@@ -74,15 +74,20 @@ async function updateSpecificCarIntoDb(query: string, payload: TCar, next: NextF
 
 }; //end;
 
-async function deleteACarFromDb(query: string) {
+async function deleteACarFromDb(query: string, next: NextFunction) {
 
     try {
-        const result = await Car.findByIdAndUpdate(query, { isDeleted: true });
+        const dataAfterDelete = await Car.findByIdAndUpdate(query, { isDeleted: true }, { new: true });
 
-        console.log(result);
+        if (dataAfterDelete) {
+            return { success: true, statusCode: 200, message: 'Car Deleted successfully', data: dataAfterDelete };
+
+        } else {
+            return { success: false, statusCode: 404, message: 'Invalid ID', data: [] };
+        };
 
     } catch (error) {
-
+        next(error);
     };
 
 }; //end
