@@ -23,9 +23,13 @@ async function getAllCarsFromDb(next: NextFunction) {
     try {
         const allData = await Car.find();
 
-        if (allData) {
+        if (allData.length) {
             return { success: true, statusCode: 200, message: 'Cars retrieved successfully', data: allData }
-        }
+
+        } else {
+            return { success: false, statusCode: 404, message: 'No Data Found', data: allData }
+
+        };
 
     } catch (error) {
         next(error)
