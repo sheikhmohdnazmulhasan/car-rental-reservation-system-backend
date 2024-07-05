@@ -40,6 +40,29 @@ async function getAllCars(req: Request, res: Response, next: NextFunction) {
         next(error);
 
     };
+
+} //end;
+
+
+async function getSpecificCar(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const result = await CarServices.getSpecificCarFromDb(req.params.id, next);
+
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+        }
+
+    } catch (error) {
+        next(error);
+
+    };
+
 }
 
-export const CarControllers = { createCar, getAllCars } 
+export const CarControllers = { createCar, getAllCars, getSpecificCar } 
