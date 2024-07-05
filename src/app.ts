@@ -16,6 +16,7 @@ app.get('/', (req: Request, res: Response) => {
 
 // application route;
 app.use('/api/auth', UserRoute);
+app.use('/api/cars', UserRoute);
 
 // global error handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
