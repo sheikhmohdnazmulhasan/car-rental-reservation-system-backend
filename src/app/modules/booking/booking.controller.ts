@@ -4,7 +4,17 @@ import { BookingServices } from "./booking.service";
 async function createBooking(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const result = BookingServices.createBookingIntoDb(req.user, req.body, next);
+        const result = await BookingServices.createBookingIntoDb(req.user, req.body, next);
+
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+
+        };
 
     } catch (error) {
         next(error);
