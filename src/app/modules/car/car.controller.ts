@@ -5,7 +5,7 @@ async function createCar(req: Request, res: Response, next: NextFunction) {
 
     try {
         const result = await CarServices.createCarIntoDb(req.body, next);
-        
+
         if (result) {
             res.status(result.statusCode).json({
                 success: result.success,
@@ -20,3 +20,5 @@ async function createCar(req: Request, res: Response, next: NextFunction) {
     };
 
 }; //end
+
+export const CarControllers = { createCar } 
