@@ -9,4 +9,15 @@ const createCarValidationSchema = z.object({
     pricePerHour: z.number().positive(), // price must be a positive number
 });
 
-export const CarValidationSchema = { createCarValidationSchema };
+const updateCarValidationSchema = z.object({
+    name: z.string().nonempty().optional(), // name must not be empty
+    description: z.string().nonempty().optional(), // description must not be empty
+    color: z.string().nonempty().optional(), // color must not be empty
+    isElectric: z.boolean().optional(),
+    features: z.array(z.string()).optional(), // array of strings
+    pricePerHour: z.number().positive().optional() // price must be a positive number
+});
+
+
+
+export const CarValidationSchema = { createCarValidationSchema, updateCarValidationSchema };

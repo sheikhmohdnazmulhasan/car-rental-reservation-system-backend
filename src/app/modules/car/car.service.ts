@@ -54,6 +54,24 @@ async function getSpecificCarFromDb(query: string, next: NextFunction) {
         next(error);
     };
 
-}//end
+}//end;
 
-export const CarServices = { createCarIntoDb, getAllCarsFromDb, getSpecificCarFromDb };
+async function updateSpecificCarIntoDb(query: string, payload: TCar, next: NextFunction) {
+
+    try {
+        const updatedData = await Car.findByIdAndUpdate(query, payload, { new: true });
+
+        if (updatedData) {
+            return { success: true, statusCode: 200, message: 'Car updated successfully', data: updatedData };
+
+        } else {
+            return { success: false, statusCode: 404, message: 'No Data Found', data: [] }
+        }
+
+    } catch (error) {
+        next(error);
+    };
+
+}; //end
+
+export const CarServices = { createCarIntoDb, getAllCarsFromDb, getSpecificCarFromDb, updateSpecificCarIntoDb };

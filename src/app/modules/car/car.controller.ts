@@ -63,6 +63,26 @@ async function getSpecificCar(req: Request, res: Response, next: NextFunction) {
 
     };
 
-}
+}; //end;
 
-export const CarControllers = { createCar, getAllCars, getSpecificCar } 
+async function updateSpecificCar(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const result = await CarServices.updateSpecificCarIntoDb(req.params.id, req.body, next);
+
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data
+            });
+        }
+    } catch (error) {
+        next(error);
+    };
+
+} //end
+
+
+export const CarControllers = { createCar, getAllCars, getSpecificCar, updateSpecificCar } 
