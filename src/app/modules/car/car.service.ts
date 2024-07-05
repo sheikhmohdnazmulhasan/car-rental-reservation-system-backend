@@ -35,6 +35,22 @@ async function getAllCarsFromDb(next: NextFunction) {
         next(error)
     };
 
-}; //end
+}; //end;
 
-export const CarServices = { createCarIntoDb, getAllCarsFromDb };
+async function getSpecificCarFromDb(query: string, next: NextFunction) {
+
+    try {
+        const car = await Car.findById({ query });
+
+        if (car) {
+            return { success: true, statusCode: 200, message: 'A Car retrieved successfully', data: car }
+
+        };
+
+    } catch (error) {
+        next(error);
+    };
+
+}//end
+
+export const CarServices = { createCarIntoDb, getAllCarsFromDb, getSpecificCarFromDb };
