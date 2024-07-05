@@ -6,10 +6,11 @@ const createCarBookingValidationSchema = z.object({
     carId: z.string().nonempty("Car ID cannot be empty"),
     date: z.string({ message: 'Invalid date format' }),
 
-    startTime: z.string().regex(/^([01]\d|2[0-3]):?([0-5]\d)$/, {
-        message: "Invalid time format",
-    }),
+    startTime: z.string({
+      message: "Invalid time format",
+    })
   })
-});
 
-export const BookingValidationSchema = { createCarBookingValidationSchema }
+})
+
+export const BookingValidation = { createCarBookingValidationSchema }

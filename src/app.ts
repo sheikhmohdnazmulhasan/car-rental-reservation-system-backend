@@ -3,6 +3,7 @@ import cors from 'cors';
 import status from 'http-status';
 import { UserRoute } from './app/modules/user/user.route';
 import { CarRoutes } from './app/modules/car/car.route';
+import { BookingRoutes } from './app/modules/booking/booking.route';
 
 const app: Application = express();
 
@@ -18,6 +19,7 @@ app.get('/', (req: Request, res: Response) => {
 // application route;
 app.use('/api/auth', UserRoute);
 app.use('/api/cars', CarRoutes);
+app.use('/api/bookings', BookingRoutes);
 
 // global error handler
 app.use((err: any, req: Request, res: Response, next: NextFunction) => {
