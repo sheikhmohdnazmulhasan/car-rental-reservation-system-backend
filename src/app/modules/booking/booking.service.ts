@@ -54,8 +54,42 @@ async function createBookingIntoDb(user: JwtPayload, payload: any, next: NextFun
         await session.abortTransaction();
         await session.endSession();
         next(error)
-    }
+    };
 
-};
+}; //end
 
-export const BookingServices = { createBookingIntoDb };
+async function getUserSpecificBookingsFromDb(user: JwtPayload, next: NextFunction) {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+
+        const userObj = await User.findOne({ email: user?.user }).session(session);
+
+        if (!userObj) {
+            return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Failed to fetch booking', data: [] };
+        };
+
+        const bookings = await Booking.find({ user: userObj._id }).session(session).populate('car user');
+
+        if (!bookings.length) {
+            return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Failed to fetch booking', data: [] };
+
+        };
+
+        await session.commitTransaction();
+        await session.endSession();
+
+        return { success: true, statusCode: httpStatus.OK, message: 'My Bookings retrieved successfully', data: bookings };
+
+
+    } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+        
+        next(error);
+    };
+
+}; //end
+
+export const BookingServices = { createBookingIntoDb, getUserSpecificBookingsFromDb };
