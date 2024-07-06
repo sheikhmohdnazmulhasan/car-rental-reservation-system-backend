@@ -109,6 +109,14 @@ async function returnCar(req: Request, res: Response, next: NextFunction) {
     try {
         const result = await CarServices.returnCarDb(req.body, next);
 
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data
+            });
+        };
 
     } catch (error) {
         next(error);

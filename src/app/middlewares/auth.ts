@@ -33,7 +33,7 @@ function Auth(role: string) {
                     return res.status(401).json({
                         success: false,
                         statusCode: 401,
-                        message: 'You have no access to this route'
+                        message: `You have no access to this route`
                     });
 
                 } else {

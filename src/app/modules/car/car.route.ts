@@ -9,10 +9,12 @@ const router = Router();
 router.post('/', Auth('admin'), CarControllers.createCar);
 router.get('/', CarControllers.getAllCars);
 router.get('/:id', CarControllers.getSpecificCar);
+
+router.put('/return', Auth('admin'), CarControllers.returnCar);
+
 router.put('/:id', Auth('admin'), ValidationRequest(CarValidationSchema.updateCarValidationSchema),
     CarControllers.updateSpecificCar);
 
-router.put('/return',)
 
 router.delete('/:id', Auth('admin'), CarControllers.deleteACar);
 

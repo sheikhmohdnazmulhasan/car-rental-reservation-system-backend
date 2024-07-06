@@ -9,51 +9,69 @@ import mongoose from "mongoose";
 
 async function createBookingIntoDb(user: JwtPayload, payload: any, next: NextFunction) {
     const session = await mongoose.startSession();
+    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
-    try {
+    if (timeRegex.test(payload.startTime)) {
 
-        // start session
-        session.startTransaction();
+        try {
 
-        const fullCarObj = await Car.findById(payload.carId).session(session);
+            // start session
+            session.startTransaction();
 
-        if (!fullCarObj || fullCarObj.isDeleted) {
-            return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'The car ID you provided is incorrect or the car is past way', data: [] };
-        }
+            const fullCarObj = await Car.findById(payload.carId).session(session);
 
-        if (fullCarObj.status === 'unavailable') {
-            return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Car is not available right now!', data: [] };
+            if (!fullCarObj || fullCarObj.isDeleted) {
+                return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'The car ID you provided is incorrect or the car is past way', data: [] };
+            }
+
+            if (fullCarObj.status === 'unavailable') {
+                return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Car is not available right now!', data: [] };
+
+            };
+
+            const userObj = await User.findOne({ email: user.user }).session(session);
+            if (!userObj) {
+                return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Booking Unsuccessful', data: [] }
+            };
+
+            const updateCarStatus = await Car.findByIdAndUpdate(payload.carId, { status: 'unavailable' }).session(session);
+            if (!updateCarStatus) {
+                return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Booking Unsuccessful', data: [] }
+            };
+
+            const dataForServer = { car: fullCarObj._id, date: payload.date, startTime: payload.startTime, user: userObj?._id };
+
+            const booking = await Booking.create([dataForServer], { session });
+            const populatedBooking = await booking[0].populate('car user');
+
+            if (!booking) {
+                return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Booking Unsuccessful', data: [] };
+            };
+
+            await session.commitTransaction();
+            await session.endSession();
+
+            return { success: true, statusCode: httpStatus.OK, message: 'Car booked successfully', data: populatedBooking }
+
+        } catch (error) {
+            await session.abortTransaction();
+            await session.endSession();
+            next(error)
+        };
+
+    } else {
+
+        if (/^\d{4}$/.test(payload.startTime)) {
+            return { success: false, statusCode: 400, message: 'Time should be in HH:MM format, not without colon.', data: [] }
+
+        } else if (/^\d{2}$/.test(payload.startTime)) {
+            return { success: false, statusCode: 400, message: 'Time should be in HH:MM format, you only provided hours.', data: [] }
+
+        } else {
+            return { success: false, statusCode: 400, message: 'Invalid time format.', data: [] }
 
         };
 
-        const userObj = await User.findOne({ email: user.user }).session(session);
-        if (!userObj) {
-            return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Booking Unsuccessful', data: [] }
-        };
-
-        const updateCarStatus = await Car.findByIdAndUpdate(payload.carId, { status: 'unavailable' }).session(session);
-        if (!updateCarStatus) {
-            return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Booking Unsuccessful', data: [] }
-        };
-
-        const dataForServer = { car: fullCarObj._id, date: payload.date, startTime: payload.startTime, user: userObj?._id };
-
-        const booking = await Booking.create([dataForServer], { session });
-        const populatedBooking = await booking[0].populate('car user');
-
-        if (!booking) {
-            return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Booking Unsuccessful', data: [] };
-        };
-
-        await session.commitTransaction();
-        await session.endSession();
-
-        return { success: true, statusCode: httpStatus.OK, message: 'Car booked successfully', data: populatedBooking }
-
-    } catch (error) {
-        await session.abortTransaction();
-        await session.endSession();
-        next(error)
     };
 
 }; //end
@@ -86,7 +104,7 @@ async function getUserSpecificBookingsFromDb(user: JwtPayload, next: NextFunctio
     } catch (error) {
         await session.abortTransaction();
         await session.endSession();
-        
+
         next(error);
     };
 
