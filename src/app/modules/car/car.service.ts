@@ -2,6 +2,7 @@ import { NextFunction } from "express";
 import { TCar } from "./car.interface";
 import Car from "./car.model";
 import httpStatus from "http-status";
+import Booking from "../booking/booking.model";
 
 async function createCarIntoDb(payload: TCar, next: NextFunction) {
 
@@ -90,6 +91,17 @@ async function deleteACarFromDb(query: string, next: NextFunction) {
         next(error);
     };
 
-}; //end
+}; //end;
 
-export const CarServices = { createCarIntoDb, getAllCarsFromDb, getSpecificCarFromDb, updateSpecificCarIntoDb, deleteACarFromDb };
+async function returnCarDb(payload: any, next: NextFunction) {
+
+    try {
+        const bookingObj = await Booking.findById(payload?.bookingId);
+        console.log(bookingObj);
+    } catch (error) {
+        next(error);
+    };
+
+}; // end
+
+export const CarServices = { createCarIntoDb, getAllCarsFromDb, getSpecificCarFromDb, updateSpecificCarIntoDb, deleteACarFromDb, returnCarDb };
