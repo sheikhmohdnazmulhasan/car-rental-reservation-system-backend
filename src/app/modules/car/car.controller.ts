@@ -102,7 +102,19 @@ async function deleteACar(req: Request, res: Response, next: NextFunction) {
         next(error);
     };
 
-};
+}; //end
+
+async function returnCar(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const result = await CarServices.returnCarDb(req.body, next);
 
 
-export const CarControllers = { createCar, getAllCars, getSpecificCar, updateSpecificCar, deleteACar };
+    } catch (error) {
+        next(error);
+    };
+
+}// end
+
+
+export const CarControllers = { createCar, getAllCars, getSpecificCar, updateSpecificCar, deleteACar, returnCar };
