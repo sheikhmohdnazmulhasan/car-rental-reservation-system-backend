@@ -26,10 +26,10 @@ async function createBookingIntoDb(user: JwtPayload, payload: any, next: NextFun
                     return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'The car ID you provided is incorrect or the car is past way', data: [] };
                 }
 
-                // if (fullCarObj.status === 'unavailable') {
-                //     return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Car is not available right now!', data: [] };
+                if (fullCarObj.status === 'unavailable') {
+                    return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Car is not available right now!', data: [] };
 
-                // };
+                };
 
                 const userObj = await User.findOne({ email: user.user }).session(session);
                 if (!userObj) {
@@ -120,18 +120,37 @@ async function getAllBookingsFromDb(query: any, next: NextFunction) {
     let bookings;
 
     try {
+
         if (query.carId && !query.date) {
             bookings = await Booking.find({ car: query?.carId }).populate('car user');
 
         } else if (query.date && !query.carId) {
-            bookings = await Booking.find({ date: query?.date }).populate('car user');
+
+            if (isValidDate(query.date)) {
+                bookings = await Booking.find({ date: query?.date }).populate('car user');
+
+            } else {
+                return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Date Not Valid', data: [] };
+
+            };
 
         } else if (query.date && query.carId) {
-            bookings = await Booking.find({ car: query?.carId, date: query?.date }).populate('car user');
+
+            if (isValidDate(query.date)) {
+                bookings = await Booking.find({ car: query?.carId, date: query?.date }).populate('car user');
+
+            } else {
+                return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Date Not Valid', data: [] };
+            };
 
         } else {
             bookings = await Booking.find().populate('car user');
         };
+
+        if (!bookings.length) {
+            return { success: false, statusCode: httpStatus.NOT_FOUND, message: 'Not Found', data: [] };
+
+        }
 
         return { success: true, statusCode: httpStatus.OK, message: 'Bookings retrieved successfully', data: bookings };
 
