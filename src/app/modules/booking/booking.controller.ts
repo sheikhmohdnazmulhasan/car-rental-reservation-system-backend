@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import { BookingServices } from "./booking.service";
+import AppError from "../../errors/AppError";
+import httpStatus from "http-status";
 
 async function createBooking(req: Request, res: Response, next: NextFunction) {
 
@@ -59,7 +61,6 @@ async function getAllBookingsFromDb(req: Request, res: Response, next: NextFunct
         };
 
     } catch (error) {
-        next(error);
     }
 }
 

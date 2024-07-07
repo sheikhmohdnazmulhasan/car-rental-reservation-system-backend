@@ -112,7 +112,7 @@ async function getUserSpecificBookingsFromDb(user: JwtPayload, next: NextFunctio
 
 async function getAllBookingsFromDb(query: any, next: NextFunction) {
     let bookings;
-
+    
     try {
         if (query.carId && !query.date) {
             bookings = await Booking.find({ car: query?.carId }).populate('car user');

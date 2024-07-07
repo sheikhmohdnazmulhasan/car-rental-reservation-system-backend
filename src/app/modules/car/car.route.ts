@@ -6,7 +6,7 @@ import { CarValidationSchema } from "./car.validation";
 
 const router = Router();
 
-router.post('/', Auth('admin'), CarControllers.createCar);
+router.post('/', Auth('admin'), ValidationRequest(CarValidationSchema.createCarValidationSchema), CarControllers.createCar);
 router.get('/', CarControllers.getAllCars);
 router.get('/:id', CarControllers.getSpecificCar);
 

@@ -1,9 +1,10 @@
-import express, { Application, NextFunction, Request, Response } from 'express';
+import express, { Application, Request, Response } from 'express';
 import cors from 'cors';
 import status from 'http-status';
 import { UserRoute } from './app/modules/user/user.route';
 import { CarRoutes } from './app/modules/car/car.route';
 import { BookingRoutes } from './app/modules/booking/booking.route';
+import { globalErrorHandler } from './app/middlewares/globalErrorHandler';
 
 const app: Application = express();
 
@@ -22,17 +23,7 @@ app.use('/api/cars', CarRoutes);
 app.use('/api/bookings', BookingRoutes);
 
 // global error handler
-app.use((err: any, req: Request, res: Response, next: NextFunction) => {
-    const statusCode = 500;
-    const message = err.message || 'Something Wrong';
-
-    return res.status(statusCode).json({
-        success: false,
-        message,
-        error: err,
-    });
-
-});
+app.use(globalErrorHandler);
 
 // not found route
 app.all('*', (req: Request, res: Response) => {
