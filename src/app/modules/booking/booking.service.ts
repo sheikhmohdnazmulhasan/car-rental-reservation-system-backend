@@ -110,4 +110,29 @@ async function getUserSpecificBookingsFromDb(user: JwtPayload, next: NextFunctio
 
 }; //end
 
-export const BookingServices = { createBookingIntoDb, getUserSpecificBookingsFromDb };
+async function getAllBookingsFromDb(query: any, next: NextFunction) {
+    let bookings;
+
+    try {
+        if (query.carId && !query.date) {
+            bookings = await Booking.find({ car: query?.carId }).populate('car user');
+
+        } else if (query.date && !query.carId) {
+            bookings = await Booking.find({ date: query?.date }).populate('car user');
+
+        } else if (query.date && query.carId) {
+            bookings = await Booking.find({ car: query?.carId, date: query?.date }).populate('car user');
+
+        } else {
+            bookings = await Booking.find().populate('car user');
+        };
+
+        return { success: true, statusCode: httpStatus.OK, message: 'Bookings retrieved successfully', data: bookings };
+
+
+    } catch (error) {
+        next(error);
+    };
+}
+
+export const BookingServices = { createBookingIntoDb, getUserSpecificBookingsFromDb, getAllBookingsFromDb };

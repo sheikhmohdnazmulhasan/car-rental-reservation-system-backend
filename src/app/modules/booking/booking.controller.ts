@@ -40,6 +40,27 @@ async function getUserSpecificBookings(req: Request, res: Response, next: NextFu
     } catch (error) {
         next(error);
     };
-};
 
-export const bookingController = { createBooking, getUserSpecificBookings };
+}; //end
+
+async function getAllBookingsFromDb(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const result = await BookingServices.getAllBookingsFromDb(req.query, next);
+
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+
+        };
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export const bookingController = { createBooking, getUserSpecificBookings, getAllBookingsFromDb };
