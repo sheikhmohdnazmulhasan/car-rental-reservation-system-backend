@@ -7,12 +7,14 @@ function CheckUniqueEmail() {
         const isEmailExist = await User.findOne({ email: req.body.email });
 
         if (isEmailExist) {
-            return res.status(httpStatus.BAD_REQUEST).json({ success: false, message: 'Email already registered' });
+            return res.status(httpStatus.BAD_REQUEST).json({
+                success: false,
+                message: 'Email already registered'
+            });
 
         } else {
             return next();
         };
-
     }
 };
 

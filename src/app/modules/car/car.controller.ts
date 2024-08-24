@@ -125,4 +125,11 @@ async function returnCar(req: Request, res: Response, next: NextFunction) {
 }// end
 
 
-export const CarControllers = { createCar, getAllCars, getSpecificCar, updateSpecificCar, deleteACar, returnCar };
+export const CarControllers = {
+    createCar,
+    getAllCars,
+    getSpecificCar,
+    updateSpecificCar,
+    deleteACar,
+    returnCar
+};

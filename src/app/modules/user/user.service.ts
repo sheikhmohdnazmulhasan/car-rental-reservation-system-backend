@@ -13,8 +13,12 @@ async function createUserIntoDb(payload: TUser, next: NextFunction) {
 
         if (user) {
             const userForClient = await User.findById(user._id);
-
-            return { success: true, statusCode: httpStatus.CREATED, message: 'User registered successfully', data: userForClient }
+            return {
+                success: true,
+                statusCode: httpStatus.CREATED,
+                message: 'User registered successfully',
+                data: userForClient
+            }
         }
 
     } catch (error) {
@@ -27,20 +31,29 @@ async function loginUser(payload: TLogin, next: NextFunction) {
 
     try {
         let user = await User.findOne({ email: payload?.email }).select('+password');
-
         if (!user) {
-            return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'The email you provided did not match any accounts', data: null, token: null };
-
+            return {
+                success: false,
+                statusCode: httpStatus.BAD_REQUEST,
+                message: 'The email you provided did not match any accounts',
+                data: null,
+                token: null
+            };
         };
 
         const isPasswordCorrect = await bcrypt.compare(payload.password, user.password);
 
         if (!isPasswordCorrect) {
-            return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Wrong Password', data: null, token: null };
+            return {
+                success: false,
+                statusCode: httpStatus.BAD_REQUEST,
+                message: 'Wrong Password',
+                data: null,
+                token: null
+            };
         };
 
         const tokenPayload = { user: user.email, role: user.role };
-
         const accessToken = jwt.sign(tokenPayload, (config.jwt_access_token as string), { expiresIn: '3d' });
 
         if (accessToken) {
@@ -48,10 +61,15 @@ async function loginUser(payload: TLogin, next: NextFunction) {
 
             if (refreshToken) {
                 const userForClient = await User.findOne({ email: payload?.email });
-
-                return { success: true, statusCode: httpStatus.OK, message: 'User logged in successfully', data: userForClient, accessToken: accessToken, refreshToken: refreshToken }
+                return {
+                    success: true,
+                    statusCode: httpStatus.OK,
+                    message: 'User logged in successfully',
+                    data: userForClient,
+                    accessToken: accessToken,
+                    refreshToken: refreshToken
+                }
             }
-
         };
 
     } catch (error) {

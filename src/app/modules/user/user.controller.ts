@@ -5,7 +5,6 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
 
     try {
         const result = await UserServices.createUserIntoDb(req.body, next)
-
         if (result) {
             res.status(result.statusCode).json({
                 success: result.success,
@@ -18,14 +17,12 @@ async function createUser(req: Request, res: Response, next: NextFunction) {
     } catch (error) {
         next(error);
     };
-
 }; //end
 
 async function loginUser(req: Request, res: Response, next: NextFunction) {
 
     try {
         const result = await UserServices.loginUser(req.body, next);
-
         if (result) {
             res.cookie('refreshToken', result?.refreshToken, {
                 secure: false,
@@ -42,9 +39,8 @@ async function loginUser(req: Request, res: Response, next: NextFunction) {
         };
 
     } catch (error) {
-        next()
+        next(error)
     };
-
 };
 
 export const UserControllers = { createUser, loginUser };

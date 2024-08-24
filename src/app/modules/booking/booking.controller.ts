@@ -1,7 +1,5 @@
 import { NextFunction, Request, Response } from "express";
 import { BookingServices } from "./booking.service";
-import AppError from "../../errors/AppError";
-import httpStatus from "http-status";
 
 async function createBooking(req: Request, res: Response, next: NextFunction) {
 
@@ -20,7 +18,7 @@ async function createBooking(req: Request, res: Response, next: NextFunction) {
 
     } catch (error) {
         next(error);
-    };
+    }
 
 }; //end
 
@@ -64,4 +62,9 @@ async function getAllBookingsFromDb(req: Request, res: Response, next: NextFunct
     }
 }
 
-export const bookingController = { createBooking, getUserSpecificBookings, getAllBookingsFromDb };
+// exports
+export const bookingController = {
+    createBooking,
+    getUserSpecificBookings,
+    getAllBookingsFromDb
+};

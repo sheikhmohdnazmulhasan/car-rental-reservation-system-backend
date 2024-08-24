@@ -7,7 +7,6 @@ function Auth(role: string) {
         const authHeader = req.headers.authorization;
 
         if (!authHeader || !authHeader.startsWith('Bearer')) {
-
             return res.status(401).json({
                 success: false,
                 statusCode: 401,
@@ -16,9 +15,7 @@ function Auth(role: string) {
         };
 
         const extractToken = authHeader.slice(7);
-
         jwt.verify(extractToken, (config.jwt_access_token as string), (err, decoded) => {
-
             if (err) {
                 return res.status(401).json({
                     success: false,
@@ -28,7 +25,6 @@ function Auth(role: string) {
 
             } else {
                 const payload = decoded as JwtPayload;
-
                 if (payload.role !== role) {
                     return res.status(401).json({
                         success: false,
@@ -38,7 +34,6 @@ function Auth(role: string) {
 
                 } else {
                     req.user = (decoded as JwtPayload);
-                    
                     next();
                 }
             };
