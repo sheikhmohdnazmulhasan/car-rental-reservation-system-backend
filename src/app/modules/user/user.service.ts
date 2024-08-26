@@ -34,9 +34,26 @@ async function getFullUserDataFormDb(email: string, next: NextFunction) {
         if (user) {
             return {
                 success: true,
-                statusCode: httpStatus.CREATED,
+                statusCode: httpStatus.OK,
                 message: 'User retrieved successfully',
                 data: user
+            }
+        }
+    } catch (error) {
+        next(error)
+    }
+};
+
+async function updateSpecificUserIntoDb(payload: Partial<TUser>, email: string, next: NextFunction) {
+
+    try {
+        const res = await User.findOneAndUpdate({ email }, payload, { new: true });
+        if (res) {
+            return {
+                success: true,
+                statusCode: httpStatus.OK,
+                message: 'User Update successfully',
+                data: res
             }
         }
     } catch (error) {
@@ -95,4 +112,4 @@ async function loginUser(payload: TLogin, next: NextFunction) {
 
 }; //end
 
-export const UserServices = { createUserIntoDb, loginUser, getFullUserDataFormDb };
+export const UserServices = { createUserIntoDb, loginUser, getFullUserDataFormDb, updateSpecificUserIntoDb };

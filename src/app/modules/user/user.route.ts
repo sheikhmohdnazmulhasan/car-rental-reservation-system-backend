@@ -9,6 +9,10 @@ const router = express.Router();
 router.post('/signup', ValidationRequest(UserValidation.createUserValidationSchema), CheckUniqueEmail(), UserControllers.createUser);
 
 router.post('/signin', ValidationRequest(UserValidation.loginUserValidationSchema), UserControllers.loginUser);
-router.get('/user', UserControllers.getFullUserObj)
+
+router.patch('/user/update', ValidationRequest(UserValidation.updateUserValidationSchema), UserControllers.updateSpecificUser)
+
+router.get('/user', UserControllers.getFullUserObj);
+
 
 export const UserRoute = router;
