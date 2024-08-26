@@ -11,4 +11,6 @@ export interface TUser {
 export interface TLogin {
     email: string;
     password: string;
+
+
 };
