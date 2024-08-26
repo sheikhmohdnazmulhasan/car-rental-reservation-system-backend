@@ -1,5 +1,4 @@
 import { JwtPayload } from "jsonwebtoken";
-import { TBooking } from "./booking.interface";
 import { NextFunction } from "express";
 import User from "../user/user.model";
 import Car from "../car/car.model";

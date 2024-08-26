@@ -10,7 +10,6 @@ const bookingSchema = new mongoose.Schema<TBooking>({
     user: { type: Schema.Types.ObjectId, required: true, ref: 'User' }
 }, { timestamps: true });
 
-
 bookingSchema.methods.toJSON = function () {
     const obj = this.toObject();
     // delete obj.password;

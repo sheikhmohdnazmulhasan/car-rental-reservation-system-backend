@@ -5,10 +5,11 @@ import config from "../../config";
 
 const userSchema = new Schema<TUser>({
     name: { type: String, required: true },
+    photo: { type: String, required: false },
     email: { type: String, required: true },
     role: { type: String, enum: ['admin', 'user'], required: true },
-    phone: { type: String, required: true },
-    address: { type: String, required: true },
+    phone: { type: String, required: false },
+    address: { type: String, required: false },
     password: { type: String, required: true, select: false },
 
 }, { timestamps: true });

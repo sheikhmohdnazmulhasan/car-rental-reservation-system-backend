@@ -15,7 +15,6 @@ router.put('/return', Auth('admin'), CarControllers.returnCar);
 router.put('/:id', Auth('admin'), ValidationRequest(CarValidationSchema.updateCarValidationSchema),
     CarControllers.updateSpecificCar);
 
-
 router.delete('/:id', Auth('admin'), CarControllers.deleteACar);
 
 export const CarRoutes = router;

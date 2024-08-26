@@ -26,6 +26,10 @@ const carSchema = new mongoose.Schema<TCar>({
         type: Number,
         required: true,
     },
+    location: {
+        type: String,
+        required: true,
+    },
     status: {
         type: String,
         enum: ['available', 'unavailable'],

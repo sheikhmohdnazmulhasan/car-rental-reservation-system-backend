@@ -14,6 +14,11 @@ const createCarValidationSchema = z.object({
                 required_error: "Description is required",
                 invalid_type_error: "Description must be a string"
             }),
+        location: z
+            .string({
+                required_error: "Location is required",
+                invalid_type_error: "Location must be a string"
+            }),
         color: z
             .string({
                 required_error: "Color is required",
@@ -50,6 +55,11 @@ const updateCarValidationSchema = z.object({
             })
             .min(2, "Name must be at least 2 characters").optional(),
         description: z
+            .string({
+                required_error: "Description is required",
+                invalid_type_error: "Description must be a string"
+            }).optional(),
+        location: z
             .string({
                 required_error: "Description is required",
                 invalid_type_error: "Description must be a string"
