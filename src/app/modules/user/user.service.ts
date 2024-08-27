@@ -80,8 +80,6 @@ async function getRoleBaseUserFormDb(role: string, next: NextFunction) {
 
 async function changeUserRoleIntoBd(payload: { _id: string; role: string }, next: NextFunction) {
 
-    console.log(payload);
-
     try {
         const res = await User.findByIdAndUpdate(payload._id, { role: payload?.role }, { new: true });
         if (res) {

@@ -4,7 +4,7 @@ export interface TCar {
     description: string;
     color: string;
     location: string;
-    isElectric: boolean;
+    FuelType: string;
     features: string[];
     pricePerHour: number;
     status: 'available' | 'unavailable';

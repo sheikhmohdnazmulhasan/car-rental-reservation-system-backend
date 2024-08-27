@@ -24,10 +24,10 @@ const createCarValidationSchema = z.object({
                 required_error: "Color is required",
                 invalid_type_error: "Color must be a string"
             }),
-        isElectric: z
-            .boolean({
-                required_error: "isElectric is required",
-                invalid_type_error: "isElectric must be a boolean"
+        FuelType: z
+            .string({
+                required_error: "FuelType is required",
+                invalid_type_error: "FuelType must be a string"
             }),
         features: z
             .array(z.string({
@@ -69,10 +69,10 @@ const updateCarValidationSchema = z.object({
                 required_error: "Color is required",
                 invalid_type_error: "Color must be a string"
             }).optional(),
-        isElectric: z
-            .boolean({
-                required_error: "isElectric is required",
-                invalid_type_error: "isElectric must be a boolean"
+        FuelType: z
+            .string({
+                required_error: "FuelType is required",
+                invalid_type_error: "FuelType must be a string"
             }).optional(),
         features: z
             .array(z.string({

@@ -14,8 +14,8 @@ const carSchema = new mongoose.Schema<TCar>({
         type: String,
         required: true,
     },
-    isElectric: {
-        type: Boolean,
+    FuelType: {
+        type: String,
         required: true,
     },
     features: {
