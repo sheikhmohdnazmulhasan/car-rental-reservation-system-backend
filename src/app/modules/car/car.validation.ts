@@ -24,10 +24,15 @@ const createCarValidationSchema = z.object({
                 required_error: "Color is required",
                 invalid_type_error: "Color must be a string"
             }),
-        FuelType: z
+        fuelType: z
             .string({
                 required_error: "FuelType is required",
                 invalid_type_error: "FuelType must be a string"
+            }),
+        photo: z
+            .string({
+                required_error: "photo is required",
+                invalid_type_error: "photo must be a string"
             }),
         features: z
             .array(z.string({

@@ -14,7 +14,11 @@ const carSchema = new mongoose.Schema<TCar>({
         type: String,
         required: true,
     },
-    FuelType: {
+    fuelType: {
+        type: String,
+        required: true,
+    },
+    photo: {
         type: String,
         required: true,
     },
