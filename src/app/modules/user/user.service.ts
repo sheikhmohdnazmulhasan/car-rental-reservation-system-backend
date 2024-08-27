@@ -78,6 +78,26 @@ async function getRoleBaseUserFormDb(role: string, next: NextFunction) {
     }
 }
 
+async function changeUserRoleIntoBd(payload: { _id: string; role: string }, next: NextFunction) {
+
+    console.log(payload);
+
+    try {
+        const res = await User.findByIdAndUpdate(payload._id, { role: payload?.role }, { new: true });
+        if (res) {
+            return {
+                success: true,
+                statusCode: httpStatus.OK,
+                message: `user role changed to ${payload?.role}`,
+                data: res
+            }
+        }
+
+    } catch (error) {
+        next(error)
+    }
+}
+
 async function loginUser(payload: TLogin, next: NextFunction) {
 
     try {
@@ -129,4 +149,4 @@ async function loginUser(payload: TLogin, next: NextFunction) {
 
 }; //end
 
-export const UserServices = { createUserIntoDb, loginUser, getFullUserDataFormDb, updateSpecificUserIntoDb, getRoleBaseUserFormDb };
+export const UserServices = { createUserIntoDb, loginUser, getFullUserDataFormDb, updateSpecificUserIntoDb, getRoleBaseUserFormDb, changeUserRoleIntoBd };

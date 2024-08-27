@@ -14,7 +14,7 @@ router.post('/signin', ValidationRequest(UserValidation.loginUserValidationSchem
 router.patch('/user/update', ValidationRequest(UserValidation.updateUserValidationSchema), UserControllers.updateSpecificUser)
 
 router.get('/user', UserControllers.getFullUserObj);
-router.get('/users', Auth('admin'), UserControllers.getRoleBaseUser)
-
+router.get('/users', Auth('admin'), UserControllers.getRoleBaseUser);
+router.patch('/user/update-role', Auth('admin'), UserControllers.changeUserRole)
 
 export const UserRoute = router;

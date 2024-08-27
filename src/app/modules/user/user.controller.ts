@@ -153,6 +153,23 @@ async function getRoleBaseUser(req: Request, res: Response, next: NextFunction) 
     };
 };
 
+async function changeUserRole(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const result = await UserServices.changeUserRoleIntoBd(req.body, next);
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+        };
+    } catch (error) {
+        next(error)
+    }
+}
+
 async function loginUser(req: Request, res: Response, next: NextFunction) {
 
     try {
@@ -177,5 +194,12 @@ async function loginUser(req: Request, res: Response, next: NextFunction) {
     };
 };
 
-export const UserControllers = { createUser, loginUser, getFullUserObj, updateSpecificUser, getRoleBaseUser };
+export const UserControllers = {
+    createUser,
+    loginUser,
+    getFullUserObj,
+    updateSpecificUser,
+    getRoleBaseUser,
+    changeUserRole
+};
 
