@@ -128,6 +128,31 @@ async function updateSpecificUser(req: Request, res: Response, next: NextFunctio
     })
 }
 
+async function getRoleBaseUser(req: Request, res: Response, next: NextFunction) {
+
+    if (req?.query?.role !== 'admin' && req.query.role !== 'user') {
+        return res.status(401).json({
+            success: false,
+            statusCode: 401,
+            message: `role must be admin or user`
+        });
+    };
+
+    try {
+        const result = await UserServices.getRoleBaseUserFormDb(req?.query?.role as string, next);
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+        };
+    } catch (error) {
+        next(error)
+    };
+};
+
 async function loginUser(req: Request, res: Response, next: NextFunction) {
 
     try {
@@ -152,5 +177,5 @@ async function loginUser(req: Request, res: Response, next: NextFunction) {
     };
 };
 
-export const UserControllers = { createUser, loginUser, getFullUserObj, updateSpecificUser };
+export const UserControllers = { createUser, loginUser, getFullUserObj, updateSpecificUser, getRoleBaseUser };
 

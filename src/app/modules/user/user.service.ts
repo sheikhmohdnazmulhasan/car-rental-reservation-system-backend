@@ -61,6 +61,23 @@ async function updateSpecificUserIntoDb(payload: Partial<TUser>, email: string, 
     }
 }
 
+async function getRoleBaseUserFormDb(role: string, next: NextFunction) {
+
+    try {
+        const res = await User.find({ role });
+        if (res) {
+            return {
+                success: true,
+                statusCode: httpStatus.OK,
+                message: `${role}s retrieved successfully`,
+                data: res
+            }
+        }
+    } catch (error) {
+        next(error);
+    }
+}
+
 async function loginUser(payload: TLogin, next: NextFunction) {
 
     try {
@@ -112,4 +129,4 @@ async function loginUser(payload: TLogin, next: NextFunction) {
 
 }; //end
 
-export const UserServices = { createUserIntoDb, loginUser, getFullUserDataFormDb, updateSpecificUserIntoDb };
+export const UserServices = { createUserIntoDb, loginUser, getFullUserDataFormDb, updateSpecificUserIntoDb, getRoleBaseUserFormDb };
