@@ -1,5 +1,10 @@
 import { Types } from "mongoose";
 
+interface TAdditionalInfo {
+    nid: string;
+    drivingLicense: string;
+    extraFeatures: string[]
+}
 export interface TBooking {
     date: string;
     user: Types.ObjectId;
@@ -7,4 +12,6 @@ export interface TBooking {
     startTime: string;
     endTime: string | null;
     totalCost: number;
+    status: 'pending' | 'ongoing' | 'succeed' | 'canceled';
+    additionalInfo: TAdditionalInfo;
 };

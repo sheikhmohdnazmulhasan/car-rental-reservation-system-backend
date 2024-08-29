@@ -60,9 +60,16 @@ async function createBookingIntoDb(user: JwtPayload, payload: any, next: NextFun
                     }
                 };
 
-                const dataForServer = { car: fullCarObj._id, date: payload.date, startTime: payload.startTime, user: userObj?._id };
+                const dataForServer = {
+                    car: fullCarObj._id,
+                    date: payload.date,
+                    startTime: payload.startTime,
+                    additionalInfo: payload.additionalInfo,
+                    user: userObj?._id
+                };
 
                 const booking = await Booking.create([dataForServer], { session });
+                ;
                 const populatedBooking = await booking[0].populate('car user');
 
                 if (!booking) {

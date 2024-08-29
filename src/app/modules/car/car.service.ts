@@ -25,6 +25,7 @@ async function createCarIntoDb(payload: TCar, next: NextFunction) {
 
 }; //end;
 
+
 async function getAllCarsFromDb(next: NextFunction) {
 
     try {

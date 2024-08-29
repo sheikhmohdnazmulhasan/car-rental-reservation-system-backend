@@ -40,7 +40,6 @@ async function getAllCars(req: Request, res: Response, next: NextFunction) {
         next(error);
 
     };
-
 } //end;
 
 
