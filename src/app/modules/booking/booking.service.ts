@@ -9,120 +9,91 @@ import isValidDate from "../../middlewares/checkValidDate";
 
 async function createBookingIntoDb(user: JwtPayload, payload: any, next: NextFunction) {
     const session = await mongoose.startSession();
-    const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+    // const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
 
     if (isValidDate(payload.date)) {
-        if (timeRegex.test(payload.startTime)) {
 
-            try {
+        try {
 
-                // start session
-                session.startTransaction();
+            // start session
+            session.startTransaction();
 
-                const fullCarObj = await Car.findById(payload.carId).session(session);
+            const fullCarObj = await Car.findById(payload.carId).session(session);
 
-                if (!fullCarObj || fullCarObj.isDeleted) {
-                    return {
-                        success: false,
-                        statusCode: httpStatus.BAD_REQUEST,
-                        message: 'The car ID you provided is incorrect or the car is past way',
-                        data: []
-                    };
-                }
-
-                if (fullCarObj.status === 'unavailable') {
-                    return {
-                        success: false,
-                        statusCode: httpStatus.BAD_REQUEST,
-                        message: 'Car is not available right now!',
-                        data: []
-                    };
-
-                };
-
-                const userObj = await User.findOne({ email: user.user }).session(session);
-                if (!userObj) {
-                    return {
-                        success: false,
-                        statusCode: httpStatus.BAD_REQUEST,
-                        message: 'Booking Unsuccessful',
-                        data: []
-                    }
-                };
-
-                const updateCarStatus = await Car.findByIdAndUpdate(payload.carId, { status: 'unavailable' }).session(session);
-                if (!updateCarStatus) {
-                    return {
-                        success: false,
-                        statusCode: httpStatus.BAD_REQUEST,
-                        message: 'Booking Unsuccessful',
-                        data: []
-                    }
-                };
-
-                const dataForServer = {
-                    car: fullCarObj._id,
-                    date: payload.date,
-                    startTime: payload.startTime,
-                    additionalInfo: payload.additionalInfo,
-                    user: userObj?._id
-                };
-
-                const booking = await Booking.create([dataForServer], { session });
-                ;
-                const populatedBooking = await booking[0].populate('car user');
-
-                if (!booking) {
-                    return {
-                        success: false,
-                        statusCode: httpStatus.BAD_REQUEST,
-                        message: 'Booking Unsuccessful',
-                        data: []
-                    };
-                };
-
-                await session.commitTransaction();
-                await session.endSession();
-
+            if (!fullCarObj || fullCarObj.isDeleted) {
                 return {
-                    success: true,
-                    statusCode: httpStatus.OK,
-                    message: 'Car booked successfully',
-                    data: populatedBooking
-                }
+                    success: false,
+                    statusCode: httpStatus.BAD_REQUEST,
+                    message: 'The car ID you provided is incorrect or the car is past way',
+                    data: []
+                };
+            }
 
-            } catch (error) {
-                await session.abortTransaction();
-                await session.endSession();
-                next(error)
+            if (fullCarObj.status === 'unavailable') {
+                return {
+                    success: false,
+                    statusCode: httpStatus.BAD_REQUEST,
+                    message: 'Car is not available right now!',
+                    data: []
+                };
+
             };
 
-        } else {
-
-            if (/^\d{4}$/.test(payload.startTime)) {
+            const userObj = await User.findOne({ email: user.user }).session(session);
+            if (!userObj) {
                 return {
                     success: false,
-                    statusCode: 400,
-                    message: 'Time should be in HH:MM format, not without colon.',
-                    data: []
-                }
-
-            } else if (/^\d{2}$/.test(payload.startTime)) {
-                return {
-                    success: false,
-                    statusCode: 400,
-                    message: 'Time should be in HH:MM format, you only provided hours.',
-                    data: []
-                }
-
-            } else {
-                return {
-                    success: false,
-                    statusCode: 400,
-                    message: 'Invalid time format.',
+                    statusCode: httpStatus.BAD_REQUEST,
+                    message: 'Booking Unsuccessful',
                     data: []
                 }
             };
+
+            const updateCarStatus = await Car.findByIdAndUpdate(payload.carId, { status: 'unavailable' }).session(session);
+            if (!updateCarStatus) {
+                return {
+                    success: false,
+                    statusCode: httpStatus.BAD_REQUEST,
+                    message: 'Booking Unsuccessful',
+                    data: []
+                }
+            };
+
+            const dataForServer = {
+                car: fullCarObj._id,
+                date: payload.date,
+                startTime: payload.startTime,
+                additionalInfo: payload.additionalInfo,
+                user: userObj?._id
+            };
+
+            const booking = await Booking.create([dataForServer], { session });
+            ;
+            const populatedBooking = await booking[0].populate('car user');
+
+            if (!booking) {
+                return {
+                    success: false,
+                    statusCode: httpStatus.BAD_REQUEST,
+                    message: 'Booking Unsuccessful',
+                    data: []
+                };
+            };
+
+            await session.commitTransaction();
+            await session.endSession();
+
+            return {
+                success: true,
+                statusCode: httpStatus.OK,
+                message: 'Car booked successfully',
+                data: populatedBooking
+            }
+
+        } catch (error) {
+            await session.abortTransaction();
+            await session.endSession();
+            next(error)
         };
 
     } else {
@@ -135,6 +106,35 @@ async function createBookingIntoDb(user: JwtPayload, payload: any, next: NextFun
     }
 
 }; //end
+
+async function updateBookingStatusIntoDb(action: 'ongoing' | 'canceled', next: NextFunction) {
+    const date = new Date().toLocaleDateString();
+    const hours = new Date().getHours().toString().padStart(2, '0');
+    const minutes = new Date().getMinutes().toString().padStart(2, '0');
+    const time = `${hours}:${minutes}`
+
+    try {
+        switch (action) {
+            case 'ongoing':
+                console.log('onggg');
+                break;
+
+            case 'canceled':
+                console.log('cancld')
+                break
+
+            default:
+                return {
+                    success: false,
+                    statusCode: httpStatus.BAD_REQUEST,
+                    message: 'Invalid Query params',
+                    data: []
+                };
+        }
+    } catch (error) {
+        next(error)
+    }
+}
 
 async function getUserSpecificBookingsFromDb(user: JwtPayload, next: NextFunction) {
     const session = await mongoose.startSession();
@@ -267,4 +267,9 @@ async function getAllBookingsFromDb(query: any, next: NextFunction) {
     };
 }
 
-export const BookingServices = { createBookingIntoDb, getUserSpecificBookingsFromDb, getAllBookingsFromDb };
+export const BookingServices = {
+    createBookingIntoDb,
+    getUserSpecificBookingsFromDb,
+    getAllBookingsFromDb,
+    updateBookingStatusIntoDb
+};

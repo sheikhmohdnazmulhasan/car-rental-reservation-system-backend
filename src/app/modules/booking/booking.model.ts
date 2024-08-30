@@ -3,7 +3,7 @@ import { TBooking } from "./booking.interface"
 
 const bookingSchema = new mongoose.Schema<TBooking>({
     date: { type: String, required: true },
-    startTime: { type: String, required: true },
+    startTime: { type: String, required: false, default: null },
     endTime: { type: String, default: null },
     totalCost: { type: Number, default: 0 },
     car: { type: Schema.Types.ObjectId, required: true, ref: 'Car' },
