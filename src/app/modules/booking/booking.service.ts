@@ -108,14 +108,14 @@ async function createBookingIntoDb(user: JwtPayload, payload: any, next: NextFun
 }; //end
 
 async function updateBookingStatusIntoDb(_id: string, action: 'ongoing' | 'canceled', next: NextFunction) {
-    const session = mongoose.startSession();
+    const session = await mongoose.startSession();
     const date = new Date().toLocaleDateString();
     const hours = new Date().getHours().toString().padStart(2, '0');
     const minutes = new Date().getMinutes().toString().padStart(2, '0');
     const startTime = `${hours}:${minutes}`
 
     try {
-        (await session).startTransaction();
+
         switch (action) {
             case 'ongoing':
                 const data = { date, startTime, status: 'ongoing' };
@@ -129,7 +129,9 @@ async function updateBookingStatusIntoDb(_id: string, action: 'ongoing' | 'cance
                 break;
 
             case 'canceled':
-                const bookingObj = await Booking.findById(_id).session(await session)
+                session.startTransaction();
+
+                const bookingObj = await Booking.findById(_id).session(session)
                 if (!bookingObj) {
                     return {
                         success: false,
@@ -138,7 +140,7 @@ async function updateBookingStatusIntoDb(_id: string, action: 'ongoing' | 'cance
                         data: []
                     }
                 };
-                const updateCarStatus = await Car.findByIdAndUpdate((bookingObj?.car as any)._id, { status: 'available' }, { new: true }).session(await session)
+                const updateCarStatus = await Car.findByIdAndUpdate((bookingObj?.car as any)._id, { status: 'available' }, { new: true }).session(session);
 
                 if (!updateCarStatus) {
                     return {
@@ -148,17 +150,23 @@ async function updateBookingStatusIntoDb(_id: string, action: 'ongoing' | 'cance
                         data: []
                     }
                 };
-                const _result = await Booking.findByIdAndUpdate(_id, { status: 'canceled' }, { new: true }).session(await session)
-                if (_result) return {
+                const _result = await Booking.findByIdAndUpdate(_id, { status: 'canceled' }, { new: true }).session(session)
+
+                if (!_result) return {
+                    success: true,
+                    statusCode: httpStatus.BAD_REQUEST,
+                    message: 'Operation Unsuccessful',
+                    data: _result
+                };
+
+                await session.commitTransaction();
+                await session.endSession();
+                return {
                     success: true,
                     statusCode: httpStatus.OK,
                     message: 'Status Changed Successfully',
                     data: _result
                 };
-
-                (await session).commitTransaction();
-                (await session).endSession();
-                break
 
             default:
                 return {
@@ -170,8 +178,8 @@ async function updateBookingStatusIntoDb(_id: string, action: 'ongoing' | 'cance
         }
 
     } catch (error) {
-        (await session).abortTransaction();
-        (await session).endSession();
+        await session.abortTransaction();
+        await session.endSession();
         next(error)
     }
 }
