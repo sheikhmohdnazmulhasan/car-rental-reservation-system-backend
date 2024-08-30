@@ -189,6 +189,27 @@ async function getAllBookingsFromDb(query: any, next: NextFunction) {
     let bookings;
 
     try {
+        if (query.status) {
+            bookings = await Booking.find({ status: query.status }).populate('car user');
+
+            if (!bookings.length) {
+                return {
+                    success: false,
+                    statusCode: httpStatus.BAD_REQUEST,
+                    message: 'Date Not Valid',
+                    data: []
+                };
+
+            } else {
+                return {
+                    success: true,
+                    statusCode: httpStatus.OK,
+                    message: 'Bookings retrieved successfully',
+                    data: bookings
+                };
+            }
+        }
+
         if (query.carId && !query.date) {
             bookings = await Booking.find({ car: query?.carId }).populate('car user');
 
@@ -213,7 +234,12 @@ async function getAllBookingsFromDb(query: any, next: NextFunction) {
                 bookings = await Booking.find({ car: query?.carId, date: query?.date }).populate('car user');
 
             } else {
-                return { success: false, statusCode: httpStatus.BAD_REQUEST, message: 'Date Not Valid', data: [] };
+                return {
+                    success: false,
+                    statusCode: httpStatus.BAD_REQUEST,
+                    message: 'Date Not Valid',
+                    data: []
+                };
             };
 
         } else {
@@ -221,11 +247,20 @@ async function getAllBookingsFromDb(query: any, next: NextFunction) {
         };
 
         if (!bookings.length) {
-            return { success: false, statusCode: httpStatus.NOT_FOUND, message: 'Not Found', data: [] };
+            return {
+                success: false,
+                statusCode: httpStatus.NOT_FOUND,
+                message: 'Not Found',
+                data: []
+            };
 
         }
-
-        return { success: true, statusCode: httpStatus.OK, message: 'Bookings retrieved successfully', data: bookings };
+        return {
+            success: true,
+            statusCode: httpStatus.OK,
+            message: 'Bookings retrieved successfully',
+            data: bookings
+        };
 
     } catch (error) {
         next(error);

@@ -13,6 +13,11 @@ const bookingSchema = new mongoose.Schema<TBooking>({
         enum: ['pending', 'ongoing', 'succeed', 'canceled'],
         default: 'pending'
     },
+    paymentStatus: {
+        type: String,
+        enum: ['verified', 'unverified'],
+        default: 'unverified'
+    },
     additionalInfo: {
         nid: { type: String, required: true },
         drivingLicense: { type: String, required: true },
