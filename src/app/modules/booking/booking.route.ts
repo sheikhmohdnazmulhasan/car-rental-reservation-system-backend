@@ -11,6 +11,7 @@ router.post('/', Auth('user'), ValidationRequest(BookingValidation.createCarBook
 
 router.patch('/action/status/:bookingId', Auth('admin'), bookingController.updateBookingStatus)
 router.get('/my-bookings', Auth('user'), bookingController.getUserSpecificBookings);
+router.delete('/delete', Auth('admin'), bookingController.deleteCanceledBooking)
 
 export const BookingRoutes = router;
 

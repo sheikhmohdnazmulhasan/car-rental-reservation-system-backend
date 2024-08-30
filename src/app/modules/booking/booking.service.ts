@@ -315,9 +315,55 @@ async function getAllBookingsFromDb(query: any, next: NextFunction) {
     };
 }
 
+async function deleteCanceledBookingFormDb(_id: string, next: NextFunction) {
+    const session = await mongoose.startSession();
+
+    try {
+        session.startTransaction();
+        const fullBookingObj = await Booking.findById(_id).session(session);
+        if (!fullBookingObj) {
+            return {
+                success: false,
+                statusCode: httpStatus.BAD_REQUEST,
+                message: 'Invalid Booking Id',
+                data: []
+            };
+        } else if (fullBookingObj?.status !== 'canceled') {
+            return {
+                success: false,
+                statusCode: httpStatus.BAD_REQUEST,
+                message: 'You Cannot delete pending or ongoing booking. Only canceled booking are allowed',
+                data: []
+            };
+        }
+        const deleteOrder = await Booking.findByIdAndDelete(_id).session(session);
+        if (!deleteOrder) {
+            return {
+                success: false,
+                statusCode: httpStatus.BAD_REQUEST,
+                message: 'Operation Unsuccessful',
+                data: []
+            };
+        }
+        await session.commitTransaction();
+        await session.endSession();
+        return {
+            success: true,
+            statusCode: httpStatus.OK,
+            message: 'Booking Deleted',
+            data: []
+        };
+    } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+        next(error)
+    }
+}
+
 export const BookingServices = {
     createBookingIntoDb,
     getUserSpecificBookingsFromDb,
     getAllBookingsFromDb,
-    updateBookingStatusIntoDb
+    updateBookingStatusIntoDb,
+    deleteCanceledBookingFormDb
 };
