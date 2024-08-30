@@ -13,5 +13,6 @@ export interface TBooking {
     endTime: string | null;
     totalCost: number;
     status: 'pending' | 'ongoing' | 'succeed' | 'canceled';
+    paymentStatus: 'verified' | 'unverified';
     additionalInfo: TAdditionalInfo;
 };
