@@ -178,7 +178,11 @@ async function returnCarDb(payload: any, next: NextFunction) {
                 }
             };
 
-            const updateDataObj = { endTime: payload.endTime, totalCost: totalCost.toFixed(2) };
+            const updateDataObj = {
+                endTime: payload.endTime,
+                totalCost: totalCost.toFixed(2),
+                status: 'succeed'
+            };
 
             const updateBooking = await Booking.findByIdAndUpdate(payload.bookingId, updateDataObj, { new: true }).populate('car user').session(session);
 

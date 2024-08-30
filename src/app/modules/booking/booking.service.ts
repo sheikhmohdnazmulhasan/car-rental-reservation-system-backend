@@ -107,20 +107,57 @@ async function createBookingIntoDb(user: JwtPayload, payload: any, next: NextFun
 
 }; //end
 
-async function updateBookingStatusIntoDb(action: 'ongoing' | 'canceled', next: NextFunction) {
+async function updateBookingStatusIntoDb(_id: string, action: 'ongoing' | 'canceled', next: NextFunction) {
+    const session = mongoose.startSession();
     const date = new Date().toLocaleDateString();
     const hours = new Date().getHours().toString().padStart(2, '0');
     const minutes = new Date().getMinutes().toString().padStart(2, '0');
-    const time = `${hours}:${minutes}`
+    const startTime = `${hours}:${minutes}`
 
     try {
+        (await session).startTransaction();
         switch (action) {
             case 'ongoing':
-                console.log('onggg');
+                const data = { date, startTime, status: 'ongoing' };
+                const result = await Booking.findByIdAndUpdate(_id, data, { new: true });
+                if (result) return {
+                    success: true,
+                    statusCode: httpStatus.OK,
+                    message: 'Status Changed Successfully',
+                    data: result
+                };
                 break;
 
             case 'canceled':
-                console.log('cancld')
+                const bookingObj = await Booking.findById(_id).session(await session)
+                if (!bookingObj) {
+                    return {
+                        success: false,
+                        statusCode: 400,
+                        message: 'Invalid booking id',
+                        data: []
+                    }
+                };
+                const updateCarStatus = await Car.findByIdAndUpdate((bookingObj?.car as any)._id, { status: 'available' }, { new: true }).session(await session)
+
+                if (!updateCarStatus) {
+                    return {
+                        success: false,
+                        statusCode: 400,
+                        message: 'Operation Unsuccessful',
+                        data: []
+                    }
+                };
+                const _result = await Booking.findByIdAndUpdate(_id, { status: 'canceled' }, { new: true }).session(await session)
+                if (_result) return {
+                    success: true,
+                    statusCode: httpStatus.OK,
+                    message: 'Status Changed Successfully',
+                    data: _result
+                };
+
+                (await session).commitTransaction();
+                (await session).endSession();
                 break
 
             default:
@@ -131,7 +168,10 @@ async function updateBookingStatusIntoDb(action: 'ongoing' | 'canceled', next: N
                     data: []
                 };
         }
+
     } catch (error) {
+        (await session).abortTransaction();
+        (await session).endSession();
         next(error)
     }
 }
@@ -195,8 +235,8 @@ async function getAllBookingsFromDb(query: any, next: NextFunction) {
             if (!bookings.length) {
                 return {
                     success: false,
-                    statusCode: httpStatus.BAD_REQUEST,
-                    message: 'Date Not Valid',
+                    statusCode: httpStatus.OK,
+                    message: 'Data not found',
                     data: []
                 };
 

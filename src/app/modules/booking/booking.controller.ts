@@ -25,7 +25,10 @@ async function createBooking(req: Request, res: Response, next: NextFunction) {
 async function updateBookingStatus(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const result = await BookingServices.updateBookingStatusIntoDb(req.query.action as "ongoing" | "canceled", next);
+        const result = await BookingServices.updateBookingStatusIntoDb(
+            req.params.bookingId as string,
+            req.query.action as "ongoing" | "canceled",
+            next);
 
         if (result) {
             res.status(result.statusCode).json({
