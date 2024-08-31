@@ -40,6 +40,7 @@ async function getAllCarsFromDb(query: Record<string, unknown>, next: NextFuncti
     if (query?.sortOrder) sortOrder = query.sortOrder === 'desc' ? 'desc' : 'asc';
 
     let filter: Record<string, unknown> = {};
+    filter.isDeleted = false;
 
     if (searchTerm) {
         filter.$or = [
