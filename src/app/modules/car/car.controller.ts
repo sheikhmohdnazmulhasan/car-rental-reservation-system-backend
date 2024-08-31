@@ -25,7 +25,7 @@ async function createCar(req: Request, res: Response, next: NextFunction) {
 async function getAllCars(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const result = await CarServices.getAllCarsFromDb(next);
+        const result = await CarServices.getAllCarsFromDb(req.query, next);
 
         if (result) {
             res.status(result.statusCode).json({

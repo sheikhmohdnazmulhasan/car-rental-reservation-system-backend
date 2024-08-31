@@ -26,16 +26,49 @@ async function createCarIntoDb(payload: TCar, next: NextFunction) {
 }; //end;
 
 
-async function getAllCarsFromDb(next: NextFunction) {
+async function getAllCarsFromDb(query: Record<string, unknown>, next: NextFunction) {
+    let searchTerm: string | null = null;
+    let location: string | null = null;
+    let minPrice: number | null = null;
+    let maxPrice: number | null = null;
+    let sortOrder: 'asc' | 'desc' = 'asc';
+
+    if (query?.searchTerm) searchTerm = query.searchTerm as string;
+    if (query?.location) location = query.location as string;
+    if (query?.minPrice) minPrice = Number(query.minPrice);
+    if (query?.maxPrice) maxPrice = Number(query.maxPrice);
+    if (query?.sortOrder) sortOrder = query.sortOrder === 'desc' ? 'desc' : 'asc';
+
+    let filter: Record<string, unknown> = {};
+
+    if (searchTerm) {
+        filter.$or = [
+            { name: { $regex: searchTerm, $options: 'i' } },
+        ];
+    }
+
+    if (location) {
+        filter.location = location.charAt(0).toUpperCase() + location.slice(1);
+    }
+
+    if (minPrice !== null && maxPrice !== null) {
+        filter.pricePerHour = { $gte: minPrice, $lte: maxPrice };
+
+    } else if (minPrice !== null) {
+        filter.pricePerHour = { $gte: minPrice };
+
+    } else if (maxPrice !== null) {
+        filter.pricePerHour = { $lte: maxPrice };
+    }
 
     try {
-        const allData = await Car.find({ isDeleted: false });
-        if (allData.length) {
+        const result = await Car.find(filter).sort({ pricePerHour: sortOrder });
+        if (result) {
             return {
                 success: true,
                 statusCode: 200,
                 message: 'Cars retrieved successfully',
-                data: allData
+                data: result
             }
 
         } else {
