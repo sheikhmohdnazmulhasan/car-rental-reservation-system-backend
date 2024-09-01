@@ -5,6 +5,7 @@ import httpStatus from "http-status";
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import config from "../../config";
+import mongoose from "mongoose";
 
 async function createUserIntoDb(payload: TUser, next: NextFunction) {
 
@@ -45,10 +46,22 @@ async function getFullUserDataFormDb(email: string, next: NextFunction) {
 };
 
 async function getUserForRecoverAccountFormDb(email: string, next: NextFunction) {
+    const session = await mongoose.startSession();
     try {
-        const user: TUser | null = await User.findOne({ email });
+        session.startTransaction();
+        const user: TUser | null = await User.findOne({ email }).session(session);
         if (user) {
             const token = jwt.sign({ email: user?.email }, (config.jwt_access_token as string), { expiresIn: '15m' });
+            const setTokenToUser = await User.findOneAndUpdate({ email }, { token }).session(session);
+            if (!setTokenToUser) {
+                return {
+                    success: false,
+                    statusCode: httpStatus.OK,
+                    message: 'something went wrong',
+                    data: []
+                }
+            }
+
             const resBody = {
                 name: user?.name,
                 email: user?.email,
@@ -56,6 +69,8 @@ async function getUserForRecoverAccountFormDb(email: string, next: NextFunction)
                 photo: user?.photo,
                 token,
             }
+            await session.commitTransaction();
+            await session.endSession();
             return {
                 success: true,
                 statusCode: httpStatus.OK,
@@ -72,7 +87,9 @@ async function getUserForRecoverAccountFormDb(email: string, next: NextFunction)
             }
         }
     } catch (error) {
-        next(error)
+        await session.abortTransaction();
+        await session.endSession();
+        next(error);
     }
 }
 
