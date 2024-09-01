@@ -29,12 +29,14 @@ async function createCarIntoDb(payload: TCar, next: NextFunction) {
 async function getAllCarsFromDb(query: Record<string, unknown>, next: NextFunction) {
     let searchTerm: string | null = null;
     let location: string | null = null;
+    let color: string | null = null;
     let minPrice: number | null = null;
     let maxPrice: number | null = null;
     let sortOrder: 'asc' | 'desc' = 'asc';
 
     if (query?.searchTerm) searchTerm = query.searchTerm as string;
     if (query?.location) location = query.location as string;
+    if (query?.color) color = query.color as string;
     if (query?.minPrice) minPrice = Number(query.minPrice);
     if (query?.maxPrice) maxPrice = Number(query.maxPrice);
     if (query?.sortOrder) sortOrder = query.sortOrder === 'desc' ? 'desc' : 'asc';
@@ -50,6 +52,9 @@ async function getAllCarsFromDb(query: Record<string, unknown>, next: NextFuncti
 
     if (location) {
         filter.location = location.charAt(0).toUpperCase() + location.slice(1);
+    }
+    if (color) {
+        filter.color = color.charAt(0).toUpperCase() + color.slice(1);
     }
 
     if (minPrice !== null && maxPrice !== null) {

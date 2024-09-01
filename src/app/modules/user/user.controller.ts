@@ -69,6 +69,22 @@ async function getFullUserObj(req: Request, res: Response, next: NextFunction) {
             }
         }
     })
+};
+
+async function getUserForRecoverAccount(req: Request, res: Response, next: NextFunction) {
+    try {
+        const result = await UserServices.getUserForRecoverAccountFormDb(req.query?.email as string, next);
+        if (result) {
+            res.status(result.statusCode).json({
+                success: result.success,
+                statusCode: result.statusCode,
+                message: result.message,
+                data: result.data,
+            });
+        }
+    } catch (error) {
+        next(error)
+    }
 }
 
 async function updateSpecificUser(req: Request, res: Response, next: NextFunction) {
@@ -200,6 +216,7 @@ export const UserControllers = {
     getFullUserObj,
     updateSpecificUser,
     getRoleBaseUser,
-    changeUserRole
+    changeUserRole,
+    getUserForRecoverAccount,
 };
 

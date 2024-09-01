@@ -44,6 +44,38 @@ async function getFullUserDataFormDb(email: string, next: NextFunction) {
     }
 };
 
+async function getUserForRecoverAccountFormDb(email: string, next: NextFunction) {
+    try {
+        const user: TUser | null = await User.findOne({ email });
+        if (user) {
+            const token = jwt.sign({ email: user?.email }, (config.jwt_access_token as string), { expiresIn: '15m' });
+            const resBody = {
+                name: user?.name,
+                email: user?.email,
+                role: user?.role,
+                photo: user?.photo,
+                token,
+            }
+            return {
+                success: true,
+                statusCode: httpStatus.OK,
+                message: 'User retrieved successfully',
+                data: resBody
+            }
+
+        } else {
+            return {
+                success: false,
+                statusCode: httpStatus.OK,
+                message: 'User Not Found',
+                data: []
+            }
+        }
+    } catch (error) {
+        next(error)
+    }
+}
+
 async function updateSpecificUserIntoDb(payload: Partial<TUser>, email: string, next: NextFunction) {
 
     try {
@@ -147,4 +179,12 @@ async function loginUser(payload: TLogin, next: NextFunction) {
 
 }; //end
 
-export const UserServices = { createUserIntoDb, loginUser, getFullUserDataFormDb, updateSpecificUserIntoDb, getRoleBaseUserFormDb, changeUserRoleIntoBd };
+export const UserServices = {
+    createUserIntoDb,
+    loginUser,
+    getFullUserDataFormDb,
+    updateSpecificUserIntoDb,
+    getRoleBaseUserFormDb,
+    changeUserRoleIntoBd,
+    getUserForRecoverAccountFormDb
+};
