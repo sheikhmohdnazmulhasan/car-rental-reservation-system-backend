@@ -74,9 +74,12 @@ async function getFullUserObj(req: Request, res: Response, next: NextFunction) {
 async function recoverAccount(req: Request, res: Response, next: NextFunction) {
     try {
         const result = await UserServices.recoverAccountFromDb(req.body, next);
-        res.json({
-            success: result.success!
-        })
+        if (result) {
+            res.json({
+                success: result.success,
+                message: result.message
+            })
+        }
     } catch (error) {
         next(error);
     };

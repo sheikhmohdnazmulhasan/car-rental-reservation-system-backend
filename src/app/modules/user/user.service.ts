@@ -5,6 +5,7 @@ import httpStatus from "http-status";
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from "../../config";
+import verifyTokenSync from "../../../utils/verifyTokenSync";
 
 async function createUserIntoDb(payload: TUser, next: NextFunction) {
 
@@ -86,37 +87,38 @@ async function getUserForRecoverAccountFormDb(email: string, next: NextFunction)
 
 async function recoverAccountFromDb(payload: { token: string, newPassword: string }, next: NextFunction) {
     try {
-        jwt.verify(payload.token, (config.jwt_access_token as string), async (err, decode) => {
-            if (err) {
+        const decoded = verifyTokenSync(payload.token, config.jwt_access_token as string);
+
+        if (!decoded || !decoded.email) {
+            return {
+                success: false,
+                message: 'OTP Expired',
+            };
+        }
+
+        const email = decoded.email;
+        const encryptedNewPassword = await bcrypt.hash(payload.newPassword, Number(config.bcrypt_salt_rounds));
+
+        if (encryptedNewPassword) {
+            const updateUser = await User.findOneAndUpdate({ email }, { password: encryptedNewPassword });
+
+            if (updateUser) {
+                return {
+                    success: true,
+                    message: 'Account recovered successfully',
+                };
+            } else {
                 return {
                     success: false,
-                    message: 'OTP Expired',
-                }
-            } else {
-                const email = (decode as JwtPayload)?.email;
-                const encryptedNewPassword = await bcrypt.hash(payload.newPassword, Number(config.bcrypt_salt_rounds));
-
-                if (encryptedNewPassword) {
-                    const updateUser = await User.findOneAndUpdate({ email }, { password: encryptedNewPassword });
-                    if (updateUser) {
-                        return {
-                            success: true,
-                            message: 'Account recovered successfully'
-                        }
-                    } else {
-                        return {
-                            success: false,
-                            message: 'Something went wrong'
-                        }
-                    }
-                } else {
-                    return {
-                        success: false,
-                        message: 'Something went wrong'
-                    }
-                }
+                    message: 'Something went wrong',
+                };
             }
-        });
+        } else {
+            return {
+                success: false,
+                message: 'Something went wrong',
+            };
+        }
     } catch (error) {
         next(error);
     }
