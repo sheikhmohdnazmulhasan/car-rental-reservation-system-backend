@@ -6,7 +6,6 @@ export interface TUser {
     password: string;
     phone: string;
     address: string;
-    token: string
 };
 
 export interface TLogin {

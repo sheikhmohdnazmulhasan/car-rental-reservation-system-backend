@@ -3,9 +3,8 @@ import { TLogin, TUser } from "./user.interface";
 import User from "./user.model";
 import httpStatus from "http-status";
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from "../../config";
-import mongoose from "mongoose";
 
 async function createUserIntoDb(payload: TUser, next: NextFunction) {
 
@@ -46,14 +45,11 @@ async function getFullUserDataFormDb(email: string, next: NextFunction) {
 };
 
 async function getUserForRecoverAccountFormDb(email: string, next: NextFunction) {
-    const session = await mongoose.startSession();
     try {
-        session.startTransaction();
-        const user: TUser | null = await User.findOne({ email }).session(session);
+        const user: TUser | null = await User.findOne({ email });
         if (user) {
             const token = jwt.sign({ email: user?.email }, (config.jwt_access_token as string), { expiresIn: '15m' });
-            const setTokenToUser = await User.findOneAndUpdate({ email }, { token }).session(session);
-            if (!setTokenToUser) {
+            if (!token) {
                 return {
                     success: false,
                     statusCode: httpStatus.OK,
@@ -68,8 +64,6 @@ async function getUserForRecoverAccountFormDb(email: string, next: NextFunction)
                 photo: user?.photo,
                 token,
             }
-            await session.commitTransaction();
-            await session.endSession();
             return {
                 success: true,
                 statusCode: httpStatus.OK,
@@ -86,8 +80,44 @@ async function getUserForRecoverAccountFormDb(email: string, next: NextFunction)
             }
         }
     } catch (error) {
-        await session.abortTransaction();
-        await session.endSession();
+        next(error);
+    }
+}
+
+async function recoverAccountFromDb(payload: { token: string, newPassword: string }, next: NextFunction) {
+    try {
+        jwt.verify(payload.token, (config.jwt_access_token as string), async (err, decode) => {
+            if (err) {
+                return {
+                    success: false,
+                    message: 'OTP Expired',
+                }
+            } else {
+                const email = (decode as JwtPayload)?.email;
+                const encryptedNewPassword = await bcrypt.hash(payload.newPassword, Number(config.bcrypt_salt_rounds));
+
+                if (encryptedNewPassword) {
+                    const updateUser = await User.findOneAndUpdate({ email }, { password: encryptedNewPassword });
+                    if (updateUser) {
+                        return {
+                            success: true,
+                            message: 'Account recovered successfully'
+                        }
+                    } else {
+                        return {
+                            success: false,
+                            message: 'Something went wrong'
+                        }
+                    }
+                } else {
+                    return {
+                        success: false,
+                        message: 'Something went wrong'
+                    }
+                }
+            }
+        });
+    } catch (error) {
         next(error);
     }
 }
@@ -202,5 +232,6 @@ export const UserServices = {
     updateSpecificUserIntoDb,
     getRoleBaseUserFormDb,
     changeUserRoleIntoBd,
-    getUserForRecoverAccountFormDb
+    getUserForRecoverAccountFormDb,
+    recoverAccountFromDb
 };

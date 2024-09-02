@@ -11,7 +11,6 @@ const userSchema = new Schema<TUser>({
     phone: { type: String, required: false },
     address: { type: String, required: false },
     password: { type: String, required: true, select: false },
-    token: { type: String, required: false }
 
 }, { timestamps: true });
 

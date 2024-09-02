@@ -15,6 +15,7 @@ router.patch('/user/update', ValidationRequest(UserValidation.updateUserValidati
 
 router.get('/user', UserControllers.getFullUserObj);
 router.get('/user/recovery', UserControllers.getUserForRecoverAccount);
+router.patch('/user/recovery/passed', UserControllers.recoverAccount);
 router.get('/users', Auth('admin'), UserControllers.getRoleBaseUser);
 router.patch('/user/update-role', Auth('admin'), UserControllers.changeUserRole)
 

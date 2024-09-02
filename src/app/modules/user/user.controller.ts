@@ -71,6 +71,17 @@ async function getFullUserObj(req: Request, res: Response, next: NextFunction) {
     })
 };
 
+async function recoverAccount(req: Request, res: Response, next: NextFunction) {
+    try {
+        const result = await UserServices.recoverAccountFromDb(req.body, next);
+        res.json({
+            success: result.success!
+        })
+    } catch (error) {
+        next(error);
+    };
+};
+
 async function getUserForRecoverAccount(req: Request, res: Response, next: NextFunction) {
     try {
         const result = await UserServices.getUserForRecoverAccountFormDb(req.query?.email as string, next);
@@ -218,5 +229,6 @@ export const UserControllers = {
     getRoleBaseUser,
     changeUserRole,
     getUserForRecoverAccount,
+    recoverAccount,
 };
 
