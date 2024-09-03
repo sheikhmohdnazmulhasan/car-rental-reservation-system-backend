@@ -5,6 +5,8 @@ import { UserRoute } from './app/modules/user/user.route';
 import { CarRoutes } from './app/modules/car/car.route';
 import { BookingRoutes } from './app/modules/booking/booking.route';
 import { globalErrorHandler } from './app/middlewares/globalErrorHandler';
+import { adminStatistics } from './app/modules/statistics/statistics.admin';
+import Auth from './app/middlewares/auth';
 
 const app: Application = express();
 
@@ -21,6 +23,7 @@ app.get('/', (req: Request, res: Response) => {
 app.use('/api/auth', UserRoute);
 app.use('/api/cars', CarRoutes);
 app.use('/api/bookings', BookingRoutes);
+app.use('/api/statistics/admin', Auth('admin'), adminStatistics.statistics);
 
 // global error handler
 app.use(globalErrorHandler);
