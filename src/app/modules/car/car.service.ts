@@ -47,6 +47,7 @@ async function getAllCarsFromDb(query: Record<string, unknown>, next: NextFuncti
     if (searchTerm) {
         filter.$or = [
             { name: { $regex: searchTerm, $options: 'i' } },
+            { location: { $regex: searchTerm, $options: 'i' } }
         ];
     }
 

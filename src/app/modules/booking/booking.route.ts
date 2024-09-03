@@ -9,7 +9,8 @@ const router = Router();
 router.get('/', Auth('admin'), bookingController.getAllBookingsFromDb)
 router.post('/', Auth('user'), ValidationRequest(BookingValidation.createCarBookingValidationSchema), bookingController.createBooking);
 
-router.patch('/action/status/:bookingId', Auth('admin'), bookingController.updateBookingStatus)
+// router.patch('/action/status/:bookingId', Auth('admin'), bookingController.updateBookingStatus)
+router.patch('/action/status/:bookingId', bookingController.updateBookingStatus)
 router.get('/my-bookings', Auth('user'), bookingController.getUserSpecificBookings);
 router.delete('/delete', Auth('admin'), bookingController.deleteCanceledBooking)
 
