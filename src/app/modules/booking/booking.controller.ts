@@ -48,7 +48,7 @@ async function updateBookingStatus(req: Request, res: Response, next: NextFuncti
 async function getUserSpecificBookings(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const result = await BookingServices.getUserSpecificBookingsFromDb(req.user, next);
+        const result = await BookingServices.getUserSpecificBookingsFromDb(req.user, req.query.status as string, next);
 
         if (result) {
             res.status(result.statusCode).json({

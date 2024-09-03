@@ -184,8 +184,9 @@ async function updateBookingStatusIntoDb(_id: string, action: 'ongoing' | 'cance
     }
 }
 
-async function getUserSpecificBookingsFromDb(user: JwtPayload, next: NextFunction) {
+async function getUserSpecificBookingsFromDb(user: JwtPayload, query: string, next: NextFunction) {
     const session = await mongoose.startSession();
+    const _query: Record<string, unknown> = {};
 
     try {
         session.startTransaction();
@@ -200,18 +201,21 @@ async function getUserSpecificBookingsFromDb(user: JwtPayload, next: NextFunctio
                 data: []
             };
         };
-
-        const bookings = await Booking.find({ user: userObj._id }).session(session).populate('car user');
-
-        if (!bookings.length) {
-            return {
-                success: false,
-                statusCode: httpStatus.BAD_REQUEST,
-                message: 'Failed to fetch booking',
-                data: []
-            };
-
+        _query.user = userObj._id;
+        if (query) {
+            _query.status = query;
         };
+        const bookings = await Booking.find(_query).session(session).populate('car user');
+
+        // if (!bookings.length) {
+        //     return {
+        //         success: false,
+        //         statusCode: httpStatus.BAD_REQUEST,
+        //         message: 'Failed to fetch booking',
+        //         data: []
+        //     };
+
+        // };
 
         await session.commitTransaction();
         await session.endSession();
