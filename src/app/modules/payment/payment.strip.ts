@@ -20,18 +20,19 @@ export async function stripe(req: Request, res: Response, next: NextFunction) {
             });
         };
         if (bookingObj?.status !== 'succeed' || bookingObj.paymentStatus !== 'unverified') {
-            res.status(httpStatus.BAD_REQUEST).json({
+            res.status(httpStatus.EXPECTATION_FAILED).json({
                 success: false,
-                message: 'booking is not successful or the payment is already complete'
+                message: 'booking is not successful or the payment is already completed'
             });
         };
         if (user.user !== bookingObj?.user.email) {
             res.status(httpStatus.BAD_REQUEST).json({
                 success: false,
-                message: "Don't try to be too generous. You cannot make payments on someone else's booking"
+                message: "Don't try to be too generous. You cannot make payments on someone else's booking. Not event GF/BF"
             })
         };
-        amount = bookingObj?.totalCost * 100;
+        amount = Number(parseFloat(String(bookingObj?.totalCost * 100)).toFixed(2))
+        console.log(amount);
 
         // stripe logic
         try {
