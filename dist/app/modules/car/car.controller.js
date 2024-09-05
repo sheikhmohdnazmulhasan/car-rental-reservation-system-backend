@@ -35,7 +35,7 @@ function createCar(req, res, next) {
 function getAllCars(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const result = yield car_service_1.CarServices.getAllCarsFromDb(next);
+            const result = yield car_service_1.CarServices.getAllCarsFromDb(req.query, next);
             if (result) {
                 res.status(result.statusCode).json({
                     success: result.success,
@@ -132,4 +132,11 @@ function returnCar(req, res, next) {
         ;
     });
 } // end
-exports.CarControllers = { createCar, getAllCars, getSpecificCar, updateSpecificCar, deleteACar, returnCar };
+exports.CarControllers = {
+    createCar,
+    getAllCars,
+    getSpecificCar,
+    updateSpecificCar,
+    deleteACar,
+    returnCar
+};

@@ -23,7 +23,12 @@ function createCarIntoDb(payload, next) {
         try {
             const newCar = yield car_model_1.default.create(payload);
             if (newCar) {
-                return { success: true, statusCode: http_status_1.default.CREATED, message: 'Car created successfully', data: newCar };
+                return {
+                    success: true,
+                    statusCode: http_status_1.default.CREATED,
+                    message: 'Car created successfully',
+                    data: newCar
+                };
             }
             ;
         }
@@ -34,15 +39,66 @@ function createCarIntoDb(payload, next) {
     });
 }
 ; //end;
-function getAllCarsFromDb(next) {
+function getAllCarsFromDb(query, next) {
     return __awaiter(this, void 0, void 0, function* () {
+        let searchTerm = null;
+        let location = null;
+        let color = null;
+        let minPrice = null;
+        let maxPrice = null;
+        let sortOrder = 'asc';
+        if (query === null || query === void 0 ? void 0 : query.searchTerm)
+            searchTerm = query.searchTerm;
+        if (query === null || query === void 0 ? void 0 : query.location)
+            location = query.location;
+        if (query === null || query === void 0 ? void 0 : query.color)
+            color = query.color;
+        if (query === null || query === void 0 ? void 0 : query.minPrice)
+            minPrice = Number(query.minPrice);
+        if (query === null || query === void 0 ? void 0 : query.maxPrice)
+            maxPrice = Number(query.maxPrice);
+        if (query === null || query === void 0 ? void 0 : query.sortOrder)
+            sortOrder = query.sortOrder === 'desc' ? 'desc' : 'asc';
+        let filter = {};
+        filter.isDeleted = false;
+        if (searchTerm) {
+            filter.$or = [
+                { name: { $regex: searchTerm, $options: 'i' } },
+                { location: { $regex: searchTerm, $options: 'i' } }
+            ];
+        }
+        if (location) {
+            filter.location = location.charAt(0).toUpperCase() + location.slice(1);
+        }
+        if (color) {
+            filter.color = color.charAt(0).toUpperCase() + color.slice(1);
+        }
+        if (minPrice !== null && maxPrice !== null) {
+            filter.pricePerHour = { $gte: minPrice, $lte: maxPrice };
+        }
+        else if (minPrice !== null) {
+            filter.pricePerHour = { $gte: minPrice };
+        }
+        else if (maxPrice !== null) {
+            filter.pricePerHour = { $lte: maxPrice };
+        }
         try {
-            const allData = yield car_model_1.default.find({ isDeleted: false });
-            if (allData.length) {
-                return { success: true, statusCode: 200, message: 'Cars retrieved successfully', data: allData };
+            const result = yield car_model_1.default.find(filter).sort({ pricePerHour: sortOrder });
+            if (result) {
+                return {
+                    success: true,
+                    statusCode: 200,
+                    message: 'Cars retrieved successfully',
+                    data: result
+                };
             }
             else {
-                return { success: false, statusCode: 404, message: 'No Data Found', data: [] };
+                return {
+                    success: false,
+                    statusCode: 404,
+                    message: 'No Data Found',
+                    data: []
+                };
             }
             ;
         }
@@ -58,10 +114,20 @@ function getSpecificCarFromDb(query, next) {
         try {
             const car = yield car_model_1.default.findOne({ _id: query, isDeleted: false });
             if (car) {
-                return { success: true, statusCode: 200, message: 'A Car retrieved successfully', data: car };
+                return {
+                    success: true,
+                    statusCode: 200,
+                    message: 'A Car retrieved successfully',
+                    data: car
+                };
             }
             else {
-                return { success: false, statusCode: 404, message: 'No Data Found', data: [] };
+                return {
+                    success: false,
+                    statusCode: 404,
+                    message: 'No Data Found',
+                    data: []
+                };
             }
         }
         catch (error) {
@@ -75,10 +141,20 @@ function updateSpecificCarIntoDb(query, payload, next) {
         try {
             const updatedData = yield car_model_1.default.findByIdAndUpdate(query, payload, { new: true });
             if (updatedData) {
-                return { success: true, statusCode: 200, message: 'Car updated successfully', data: updatedData };
+                return {
+                    success: true,
+                    statusCode: 200,
+                    message: 'Car updated successfully',
+                    data: updatedData
+                };
             }
             else {
-                return { success: false, statusCode: 404, message: 'No Data Found', data: [] };
+                return {
+                    success: false,
+                    statusCode: 404,
+                    message: 'No Data Found',
+                    data: []
+                };
             }
         }
         catch (error) {
@@ -93,10 +169,20 @@ function deleteACarFromDb(query, next) {
         try {
             const dataAfterDelete = yield car_model_1.default.findByIdAndUpdate(query, { isDeleted: true }, { new: true });
             if (dataAfterDelete) {
-                return { success: true, statusCode: 200, message: 'Car Deleted successfully', data: dataAfterDelete };
+                return {
+                    success: true,
+                    statusCode: 200,
+                    message: 'Car Deleted successfully',
+                    data: dataAfterDelete
+                };
             }
             else {
-                return { success: false, statusCode: 404, message: 'Invalid ID', data: [] };
+                return {
+                    success: false,
+                    statusCode: 404,
+                    message: 'Invalid ID',
+                    data: []
+                };
             }
             ;
         }
@@ -116,11 +202,21 @@ function returnCarDb(payload, next) {
             try {
                 const bookingObj = yield booking_model_1.default.findById(payload === null || payload === void 0 ? void 0 : payload.bookingId).populate('car').session(session);
                 if (!bookingObj) {
-                    return { success: false, statusCode: 400, message: 'Invalid booking id', data: [] };
+                    return {
+                        success: false,
+                        statusCode: 400,
+                        message: 'Invalid booking id',
+                        data: []
+                    };
                 }
                 ;
                 if (bookingObj.endTime) {
-                    return { success: false, statusCode: 400, message: 'This booking is already closed', data: [] };
+                    return {
+                        success: false,
+                        statusCode: 400,
+                        message: 'This booking is already closed',
+                        data: []
+                    };
                 }
                 ;
                 const startMoment = (0, moment_1.default)(bookingObj.startTime, 'HH:mm');
@@ -129,17 +225,36 @@ function returnCarDb(payload, next) {
                 const totalCost = duration * (bookingObj === null || bookingObj === void 0 ? void 0 : bookingObj.car).pricePerHour;
                 const updateCarStatus = yield car_model_1.default.findByIdAndUpdate((bookingObj === null || bookingObj === void 0 ? void 0 : bookingObj.car)._id, { status: 'available' }).session(session);
                 if (!updateCarStatus) {
-                    return { success: false, statusCode: 400, message: 'Operation Unsuccessful', data: [] };
+                    return {
+                        success: false,
+                        statusCode: 400,
+                        message: 'Operation Unsuccessful',
+                        data: []
+                    };
                 }
                 ;
-                const updateDataObj = { endTime: payload.endTime, totalCost: totalCost.toFixed(2) };
+                const updateDataObj = {
+                    endTime: payload.endTime,
+                    totalCost: totalCost.toFixed(2),
+                    status: 'succeed'
+                };
                 const updateBooking = yield booking_model_1.default.findByIdAndUpdate(payload.bookingId, updateDataObj, { new: true }).populate('car user').session(session);
                 if (!updateBooking) {
-                    return { success: false, statusCode: 400, message: 'Operation Unsuccessful', data: [] };
+                    return {
+                        success: false,
+                        statusCode: 400,
+                        message: 'Operation Unsuccessful',
+                        data: []
+                    };
                 }
                 yield session.commitTransaction();
                 yield session.endSession();
-                return { success: true, statusCode: 200, message: 'Car returned successfully', data: updateBooking };
+                return {
+                    success: true,
+                    statusCode: 200,
+                    message: 'Car returned successfully',
+                    data: updateBooking
+                };
             }
             catch (error) {
                 yield session.abortTransaction();
@@ -150,16 +265,38 @@ function returnCarDb(payload, next) {
         }
         else {
             if (/^\d{4}$/.test(payload.endTime)) {
-                return { success: false, statusCode: 400, message: 'Time should be in HH:MM format, not without colon.', data: [] };
+                return {
+                    success: false,
+                    statusCode: 400,
+                    message: 'Time should be in HH:MM format, not without colon.',
+                    data: []
+                };
             }
             else if (/^\d{2}$/.test(payload.endTime)) {
-                return { success: false, statusCode: 400, message: 'Time should be in HH:MM format, you only provided hours.', data: [] };
+                return {
+                    success: false,
+                    statusCode: 400,
+                    message: 'Time should be in HH:MM format, you only provided hours.',
+                    data: []
+                };
             }
             else {
-                return { success: false, statusCode: 400, message: 'Invalid time format.', data: [] };
+                return {
+                    success: false,
+                    statusCode: 400,
+                    message: 'Invalid time format.',
+                    data: []
+                };
             }
         }
     });
 }
 ; // end
-exports.CarServices = { createCarIntoDb, getAllCarsFromDb, getSpecificCarFromDb, updateSpecificCarIntoDb, deleteACarFromDb, returnCarDb };
+exports.CarServices = {
+    createCarIntoDb,
+    getAllCarsFromDb,
+    getSpecificCarFromDb,
+    updateSpecificCarIntoDb,
+    deleteACarFromDb,
+    returnCarDb
+};

@@ -40,10 +40,11 @@ const bcrypt_1 = __importDefault(require("bcrypt"));
 const config_1 = __importDefault(require("../../config"));
 const userSchema = new mongoose_1.Schema({
     name: { type: String, required: true },
+    photo: { type: String, required: false },
     email: { type: String, required: true },
     role: { type: String, enum: ['admin', 'user'], required: true },
-    phone: { type: String, required: true },
-    address: { type: String, required: true },
+    phone: { type: String, required: false },
+    address: { type: String, required: false },
     password: { type: String, required: true, select: false },
 }, { timestamps: true });
 // encrypting password

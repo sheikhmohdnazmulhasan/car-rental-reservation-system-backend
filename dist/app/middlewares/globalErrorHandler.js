@@ -69,9 +69,7 @@ const globalErrorHandler = (err, req, res, next) => {
         success: false,
         message,
         errorMessages,
-        stack: 
-        //  process.env.NODE_ENV === "production" ? "🥞" :
-        err.stack,
+        stack: err.stack,
     });
     next();
 };

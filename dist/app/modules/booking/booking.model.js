@@ -26,11 +26,26 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = __importStar(require("mongoose"));
 const bookingSchema = new mongoose_1.default.Schema({
     date: { type: String, required: true },
-    startTime: { type: String, required: true },
+    startTime: { type: String, required: false, default: null },
     endTime: { type: String, default: null },
     totalCost: { type: Number, default: 0 },
     car: { type: mongoose_1.Schema.Types.ObjectId, required: true, ref: 'Car' },
-    user: { type: mongoose_1.Schema.Types.ObjectId, required: true, ref: 'User' }
+    user: { type: mongoose_1.Schema.Types.ObjectId, required: true, ref: 'User' },
+    status: {
+        type: String,
+        enum: ['pending', 'ongoing', 'succeed', 'canceled'],
+        default: 'pending'
+    },
+    paymentStatus: {
+        type: String,
+        enum: ['verified', 'unverified'],
+        default: 'unverified'
+    },
+    additionalInfo: {
+        nid: { type: String, required: true },
+        drivingLicense: { type: String, required: true },
+        extraFeatures: { type: [String], required: false },
+    },
 }, { timestamps: true });
 bookingSchema.methods.toJSON = function () {
     const obj = this.toObject();

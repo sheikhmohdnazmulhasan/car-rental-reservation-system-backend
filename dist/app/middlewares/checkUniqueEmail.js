@@ -18,7 +18,10 @@ function CheckUniqueEmail() {
     return (req, res, next) => __awaiter(this, void 0, void 0, function* () {
         const isEmailExist = yield user_model_1.default.findOne({ email: req.body.email });
         if (isEmailExist) {
-            return res.status(http_status_1.default.BAD_REQUEST).json({ success: false, message: 'Email already registered' });
+            return res.status(http_status_1.default.BAD_REQUEST).json({
+                success: false,
+                message: 'Email already registered'
+            });
         }
         else {
             return next();

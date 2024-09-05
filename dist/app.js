@@ -10,10 +10,13 @@ const user_route_1 = require("./app/modules/user/user.route");
 const car_route_1 = require("./app/modules/car/car.route");
 const booking_route_1 = require("./app/modules/booking/booking.route");
 const globalErrorHandler_1 = require("./app/middlewares/globalErrorHandler");
+const statistics_admin_1 = require("./app/modules/statistics/statistics.admin");
+const auth_1 = __importDefault(require("./app/middlewares/auth"));
+const payment_strip_1 = require("./app/modules/payment/payment.strip");
 const app = (0, express_1.default)();
 // parser
 app.use(express_1.default.json());
-app.use((0, cors_1.default)());
+app.use((0, cors_1.default)({ origin: ['http://localhost:5173'], credentials: true }));
 // test endpoint
 app.get('/', (req, res) => {
     res.send('Hello World!');
@@ -22,6 +25,8 @@ app.get('/', (req, res) => {
 app.use('/api/auth', user_route_1.UserRoute);
 app.use('/api/cars', car_route_1.CarRoutes);
 app.use('/api/bookings', booking_route_1.BookingRoutes);
+app.get('/api/statistics/admin', (0, auth_1.default)('admin'), statistics_admin_1.adminStatistics.statistics);
+app.get('/api/user/booking/pay', (0, auth_1.default)('user'), payment_strip_1.stripe);
 // global error handler
 app.use(globalErrorHandler_1.globalErrorHandler);
 // not found route

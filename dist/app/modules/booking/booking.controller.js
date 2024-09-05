@@ -28,14 +28,56 @@ function createBooking(req, res, next) {
         catch (error) {
             next(error);
         }
-        ;
     });
 }
 ; //end
+function updateBookingStatus(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const result = yield booking_service_1.BookingServices.updateBookingStatusIntoDb(req.params.bookingId, req.query.action, next);
+            if (result) {
+                res.status(result.statusCode).json({
+                    success: result.success,
+                    statusCode: result.statusCode,
+                    message: result.message,
+                    data: result.data,
+                });
+            }
+            ;
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+;
+function afterPaymentPatch(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const result = yield booking_service_1.BookingServices.afterPaymentPatchIntoDb(req.user, req.body, next);
+            if (result) {
+                if (result) {
+                    res.status(result.statusCode).json({
+                        success: result.success,
+                        statusCode: result.statusCode,
+                        message: result.message,
+                        data: result.data,
+                    });
+                }
+                ;
+            }
+        }
+        catch (error) {
+            next(error);
+        }
+        ;
+    });
+}
+;
 function getUserSpecificBookings(req, res, next) {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            const result = yield booking_service_1.BookingServices.getUserSpecificBookingsFromDb(req.user, next);
+            const result = yield booking_service_1.BookingServices.getUserSpecificBookingsFromDb(req.user, req.query, next);
             if (result) {
                 res.status(result.statusCode).json({
                     success: result.success,
@@ -71,4 +113,31 @@ function getAllBookingsFromDb(req, res, next) {
         }
     });
 }
-exports.bookingController = { createBooking, getUserSpecificBookings, getAllBookingsFromDb };
+function deleteCanceledBooking(req, res, next) {
+    return __awaiter(this, void 0, void 0, function* () {
+        try {
+            const result = yield booking_service_1.BookingServices.deleteCanceledBookingFormDb(req.query._id, next);
+            if (result) {
+                res.status(result.statusCode).json({
+                    success: result.success,
+                    statusCode: result.statusCode,
+                    message: result.message,
+                    data: result.data,
+                });
+            }
+            ;
+        }
+        catch (error) {
+            next(error);
+        }
+    });
+}
+// exports
+exports.bookingController = {
+    createBooking,
+    getUserSpecificBookings,
+    getAllBookingsFromDb,
+    updateBookingStatus,
+    deleteCanceledBooking,
+    afterPaymentPatch
+};

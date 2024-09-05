@@ -19,7 +19,3 @@ function isValidDate(dateString) {
 }
 ;
 exports.default = isValidDate;
-// console.log(isValidDate("2024-06-15")); // true
-// console.log(isValidDate("2024-02-30")); // false (invalid date)
-// console.log(isValidDate("2024-06-31")); // false (invalid date)
-// console.log(isValidDate("2024-13-01")); // false (invalid month)

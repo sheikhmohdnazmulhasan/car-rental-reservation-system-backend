@@ -17,8 +17,12 @@ const carSchema = new mongoose_1.default.Schema({
         type: String,
         required: true,
     },
-    isElectric: {
-        type: Boolean,
+    fuelType: {
+        type: String,
+        required: true,
+    },
+    photo: {
+        type: String,
         required: true,
     },
     features: {
@@ -27,6 +31,10 @@ const carSchema = new mongoose_1.default.Schema({
     },
     pricePerHour: {
         type: Number,
+        required: true,
+    },
+    location: {
+        type: String,
         required: true,
     },
     status: {

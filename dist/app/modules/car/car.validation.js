@@ -15,15 +15,25 @@ const createCarValidationSchema = zod_1.z.object({
             required_error: "Description is required",
             invalid_type_error: "Description must be a string"
         }),
+        location: zod_1.z
+            .string({
+            required_error: "Location is required",
+            invalid_type_error: "Location must be a string"
+        }),
         color: zod_1.z
             .string({
             required_error: "Color is required",
             invalid_type_error: "Color must be a string"
         }),
-        isElectric: zod_1.z
-            .boolean({
-            required_error: "isElectric is required",
-            invalid_type_error: "isElectric must be a boolean"
+        fuelType: zod_1.z
+            .string({
+            required_error: "FuelType is required",
+            invalid_type_error: "FuelType must be a string"
+        }),
+        photo: zod_1.z
+            .string({
+            required_error: "photo is required",
+            invalid_type_error: "photo must be a string"
         }),
         features: zod_1.z
             .array(zod_1.z.string({
@@ -54,15 +64,20 @@ const updateCarValidationSchema = zod_1.z.object({
             required_error: "Description is required",
             invalid_type_error: "Description must be a string"
         }).optional(),
+        location: zod_1.z
+            .string({
+            required_error: "Description is required",
+            invalid_type_error: "Description must be a string"
+        }).optional(),
         color: zod_1.z
             .string({
             required_error: "Color is required",
             invalid_type_error: "Color must be a string"
         }).optional(),
-        isElectric: zod_1.z
-            .boolean({
-            required_error: "isElectric is required",
-            invalid_type_error: "isElectric must be a boolean"
+        FuelType: zod_1.z
+            .string({
+            required_error: "FuelType is required",
+            invalid_type_error: "FuelType must be a string"
         }).optional(),
         features: zod_1.z
             .array(zod_1.z.string({

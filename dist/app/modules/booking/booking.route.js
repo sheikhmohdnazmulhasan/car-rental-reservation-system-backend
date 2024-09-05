@@ -12,5 +12,10 @@ const booking_validation_1 = require("./booking.validation");
 const router = (0, express_1.Router)();
 router.get('/', (0, auth_1.default)('admin'), booking_controller_1.bookingController.getAllBookingsFromDb);
 router.post('/', (0, auth_1.default)('user'), (0, zodValidation_1.default)(booking_validation_1.BookingValidation.createCarBookingValidationSchema), booking_controller_1.bookingController.createBooking);
+// router.patch('/action/status/:bookingId', Auth('admin'), bookingController.updateBookingStatus)
+router.patch('/action/status/:bookingId', booking_controller_1.bookingController.updateBookingStatus);
+router.patch('/action/payout/success', (0, auth_1.default)('user'), booking_controller_1.bookingController.afterPaymentPatch);
 router.get('/my-bookings', (0, auth_1.default)('user'), booking_controller_1.bookingController.getUserSpecificBookings);
+router.delete('/delete', (0, auth_1.default)('admin'), booking_controller_1.bookingController.deleteCanceledBooking);
 exports.BookingRoutes = router;
+// 
