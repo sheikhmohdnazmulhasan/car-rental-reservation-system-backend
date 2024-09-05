@@ -262,9 +262,6 @@ async function afterPaymentPatchIntoDb(user: JwtPayload, payload: { transactionI
                 data: []
             };
         };
-
-        console.log(user.user);
-
         if (bookingObj.user.email !== user.user) {
             return {
                 success: false,
