@@ -263,7 +263,9 @@ async function afterPaymentPatchIntoDb(user: JwtPayload, payload: { transactionI
             };
         };
 
-        if (bookingObj.user.email !== user.email) {
+        console.log(user.user);
+
+        if (bookingObj.user.email !== user.user) {
             return {
                 success: false,
                 statusCode: httpStatus.BAD_REQUEST,
