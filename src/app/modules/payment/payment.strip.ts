@@ -31,8 +31,7 @@ export async function stripe(req: Request, res: Response, next: NextFunction) {
                 message: "Don't try to be too generous. You cannot make payments on someone else's booking. Not event GF/BF"
             })
         };
-        amount = Number(parseFloat(String(bookingObj?.totalCost * 100)).toFixed(2))
-        console.log(amount);
+        amount = Number(parseFloat(String(bookingObj?.totalCost * 100)).toFixed(2));
 
         // stripe logic
         try {

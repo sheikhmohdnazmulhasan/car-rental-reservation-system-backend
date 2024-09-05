@@ -43,12 +43,32 @@ async function updateBookingStatus(req: Request, res: Response, next: NextFuncti
         next(error)
     }
 
-}
+};
+
+async function afterPaymentPatch(req: Request, res: Response, next: NextFunction) {
+
+    try {
+        const result = await BookingServices.afterPaymentPatchIntoDb(req.user, req.body, next);
+        if (result) {
+            if (result) {
+                res.status(result.statusCode).json({
+                    success: result.success,
+                    statusCode: result.statusCode,
+                    message: result.message,
+                    data: result.data,
+                });
+
+            };
+        }
+    } catch (error) {
+        next(error);
+    };
+};
 
 async function getUserSpecificBookings(req: Request, res: Response, next: NextFunction) {
 
     try {
-        const result = await BookingServices.getUserSpecificBookingsFromDb(req.user, req.query.status as string, next);
+        const result = await BookingServices.getUserSpecificBookingsFromDb(req.user, req.query, next);
 
         if (result) {
             res.status(result.statusCode).json({
@@ -107,5 +127,6 @@ export const bookingController = {
     getUserSpecificBookings,
     getAllBookingsFromDb,
     updateBookingStatus,
-    deleteCanceledBooking
+    deleteCanceledBooking,
+    afterPaymentPatch
 };

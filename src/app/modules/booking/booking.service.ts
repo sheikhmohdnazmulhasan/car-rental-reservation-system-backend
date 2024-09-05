@@ -4,8 +4,9 @@ import User from "../user/user.model";
 import Car from "../car/car.model";
 import httpStatus from "http-status";
 import Booking from "./booking.model";
-import mongoose from "mongoose";
+import mongoose, { Mongoose } from "mongoose";
 import isValidDate from "../../middlewares/checkValidDate";
+import { TUser } from "../user/user.interface";
 
 async function createBookingIntoDb(user: JwtPayload, payload: any, next: NextFunction) {
     const session = await mongoose.startSession();
@@ -184,7 +185,7 @@ async function updateBookingStatusIntoDb(_id: string, action: 'ongoing' | 'cance
     }
 }
 
-async function getUserSpecificBookingsFromDb(user: JwtPayload, query: string, next: NextFunction) {
+async function getUserSpecificBookingsFromDb(user: JwtPayload, query: Record<string, unknown>, next: NextFunction) {
     const session = await mongoose.startSession();
     const _query: Record<string, unknown> = {};
 
@@ -202,9 +203,12 @@ async function getUserSpecificBookingsFromDb(user: JwtPayload, query: string, ne
             };
         };
         _query.user = userObj._id;
-        if (query) {
-            _query.status = query;
+        if (query.status) {
+            _query.status = query.status;
         };
+        if (query._id) {
+            _query._id = query._id
+        }
         const bookings = await Booking.find(_query).session(session).populate('car user');
 
         // if (!bookings.length) {
@@ -236,6 +240,60 @@ async function getUserSpecificBookingsFromDb(user: JwtPayload, query: string, ne
     };
 
 }; //end
+
+async function afterPaymentPatchIntoDb(user: JwtPayload, payload: { transactionId: string, bookingId: string }, next: NextFunction) {
+    const session = await mongoose.startSession();
+    if (!payload.transactionId) {
+        return {
+            success: false,
+            statusCode: httpStatus.BAD_REQUEST,
+            message: 'Failed to verifying transaction id',
+            data: []
+        };
+    }
+    try {
+        session.startTransaction();
+        const bookingObj = await Booking.findById(payload?.bookingId).populate<{ user: { email: string } }>('user').session(session)
+        if (!bookingObj) {
+            return {
+                success: false,
+                statusCode: httpStatus.BAD_REQUEST,
+                message: 'error fetching booking',
+                data: []
+            };
+        };
+
+        if (bookingObj.user.email !== user.email) {
+            return {
+                success: false,
+                statusCode: httpStatus.BAD_REQUEST,
+                message: 'Failed to verifying won booking',
+                data: []
+            };
+        };
+        const patchBooking = await Booking.findByIdAndUpdate(payload.bookingId, { paymentStatus: 'verified' }, { new: true }).session(session)
+        if (!patchBooking) {
+            return {
+                success: false,
+                statusCode: httpStatus.BAD_REQUEST,
+                message: "Failed to update booking's payment status",
+                data: []
+            };
+        };
+        await session.commitTransaction();
+        await session.endSession();
+        return {
+            success: true,
+            statusCode: httpStatus.OK,
+            message: "Operation successful",
+            data: patchBooking
+        };
+    } catch (error) {
+        await session.abortTransaction();
+        await session.endSession();
+        next(error);
+    }
+}
 
 async function getAllBookingsFromDb(query: any, next: NextFunction) {
     let bookings;
@@ -369,5 +427,6 @@ export const BookingServices = {
     getUserSpecificBookingsFromDb,
     getAllBookingsFromDb,
     updateBookingStatusIntoDb,
-    deleteCanceledBookingFormDb
+    deleteCanceledBookingFormDb,
+    afterPaymentPatchIntoDb
 };
